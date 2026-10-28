@@ -91,6 +91,36 @@ $create_contacts = $db_connection->prepare(
 $create_contacts->execute();
 $create_contacts->close();
 
+/*Authors*/
+$create_authors = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Authors(
+        author_id int NOT NULL AUTO_INCREMENT,
+        first_name varchar(255) NOT NULL,
+        last_name varchar(255) NOT NULL,
+        PRIMARY KEY(author_id));");
+$create_authors->execute();
+$create_authors->close();
+
+/*Category*/
+$create_category = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Category(
+        category_id int NOT NULL AUTO_INCREMENT,
+        category_name varchar(255) NOT NULL,
+        category_description varchar(255) NOT NULL,
+        PRIMARY KEY (category_id));");
+$create_category->execute();
+$create_category->close();
+
+/*Publisher*/
+$create_publisher = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Publishers(
+        pub_id int NOT NULL AUTO_INCREMENT,
+        publisher_name varchar(255) NOT NULL,
+        publisher_adress varchar(255),
+        PRIMARY KEY (pub_id));");
+$create_publisher->execute();
+$create_publisher->close();
+
 /* Below Are Tables That Have Foreign Keys */
 /* ------------------------------------------ */
 
@@ -117,6 +147,20 @@ $create_credentials = $db_connection->prepare(
         FOREIGN KEY(user_id) REFERENCES Users(user_id));");
 $create_credentials->execute();
 $create_credentials->close();
+
+/*Book*/
+$create_books = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Books(
+        book_id int NOT NULL AUTO_INCREMENT,
+        title varchar(255) NOT NULL,
+        isbn varchar(20) NOT NULL,
+        book_volume varchar(20) NOT NULL,
+        publication_year year NOT NULL,
+        pub_id int NOT NULL,
+        PRIMARY KEY(book_id),
+        FOREIGN KEY(pub_id) REFERENCES Publishers(pub_id));");
+$create_books->execute();
+$create_books->close();
 
 /* Status Display */
 echo nl2br("The database tables were successfully created.\r\n");

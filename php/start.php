@@ -162,6 +162,85 @@ $create_books = $db_connection->prepare(
 $create_books->execute();
 $create_books->close();
 
+/*Book Author*/
+/*Composite Key*/
+$create_bookAuthors = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookAuthors(
+        author_id int NOT NULL AUTO_INCREMENT,
+        book_id int NOT NULL,
+        PRIMARY KEY(author_id,book_id),
+        FOREIGN KEY(author_id) REFERENCES Authors(author_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookAuthors->execute();
+$create_bookAuthors->close();
+
+/*Book Category*/
+/*Composite Key*/
+$create_bookCategories = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookCategories(
+        category_id int NOT NULL AUTO_INCREMENT,
+        book_id int NOT NULL,
+        PRIMARY KEY(category_id,book_id),
+        FOREIGN KEY(category_id) REFERENCES Category(category_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookCategories->execute();
+$create_bookCategories->close();
+
+/*Book Copy*/
+$create_bookCopies = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookCopies(
+        copy_id int NOT NULL AUTO_INCREMENT,
+        barcode int NOT NULL UNIQUE,
+        book_id int NOT NULL,
+        PRIMARY KEY(copy_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookCopies->execute();
+$create_bookCopies->close();
+
+/*Loan */
+$create_loans = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Loans(
+        loan_id int NOT NULL AUTO_INCREMENT,
+        user_id int NOT NULL,
+        copy_id int NOT NULL,
+        checkout_date date NOT NULL,
+        due_date date NOT NULL,
+        return_date date,
+        loan_status varchar(20),
+        fine decimal(8,2) DEFAULT(0),
+        PRIMARY KEY(loan_id),
+        FOREIGN KEY(user_id) REFERENCES Users(user_id),
+        FOREIGN KEY(copy_id) REFERENCES BookCopies(copy_id))");
+$create_loans->execute();
+$create_loans->close();
+
+/*Payment */
+$create_payments = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Payments(
+        payment_id int NOT NULL AUTO_INCREMENT,
+        loan_id int NOT NULL,
+        payment_day date,
+        payment_method varchar(20),
+        amount_paid decimal(8,2) DEFAULT(0),
+        PRIMARY KEY(payment_id),
+        FOREIGN KEY(loan_id) REFERENCES Loans(loan_id))");
+$create_payments->execute();
+$create_payments->close();
+
+/*Reservations */
+$create_reservations = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Reservations(
+        reservation_id int NOT NULL AUTO_INCREMENT,
+        user_id int NOT NULL,
+        book_id int NOT NULL,
+        reservation_date date NOT NULL,
+        expire_date date NOT NULL,
+        reservation_status varchar(20),
+        PRIMARY KEY(reservation_id),
+        FOREIGN KEY(user_id) REFERENCES Users(user_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_reservations->execute();
+$create_reservations->close();
 /* Status Display */
 echo nl2br("The database tables were successfully created.\r\n");
 

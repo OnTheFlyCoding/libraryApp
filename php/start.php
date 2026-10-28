@@ -253,7 +253,9 @@ echo nl2br("The database tables were successfully created.\r\n");
 $insert_role = $db_connection->prepare(
 	"INSERT INTO Roles
     	(role_id, role_type) VALUES(?,?);");
-$insert_role->bind_param("is", $role_id, $role_title);
+$insert_role->bind_param(
+        "is",
+         $role_id, $role_title);
 
 $role_id = 1;
 $role_title = "administrator";
@@ -273,7 +275,10 @@ $insert_role->close();
 $insert_contacts = $db_connection->prepare(
 	"INSERT INTO Contacts
 		(contact_id, last_name, first_name, email, phone, street_1, street_2, city, state_code, post_code, updated) VALUES(?,?,?,?,?,?,?,?,?,?,?);");
-$insert_contacts->bind_param("issssssssis", $contact_id, $last_name, $first_name, $email, $phone, $street_1, $street_2, $city, $state_code, $post_code, $updated);
+$insert_contacts->bind_param(
+        "issssssssis",
+        $contact_id, $last_name, $first_name, $email, $phone,
+        $street_1, $street_2, $city, $state_code, $post_code, $updated);
 $contact_id = 1;
 $last_name = "Doe";
 $first_name = "John";
@@ -319,7 +324,9 @@ $insert_contacts->close();
 $insert_users = $db_connection->prepare(
 	"INSERT INTO Users
 		(user_id, role_id, contact_id, creation_date) VALUES(?,?,?,?);");
-$insert_users->bind_param("iiis", $user_id, $role_id, $contact_id, $creation_date);
+$insert_users->bind_param(
+        "iiis",
+        $user_id, $role_id, $contact_id, $creation_date);
 $user_id = 1;
 $role_id = 1;
 $contact_id = 1;
@@ -367,7 +374,18 @@ $insert_credentials->execute();
 
 $insert_credentials->close();
 
+/*Author */
+$insert_author = $db_connection->prepare(
+        "INSERT INTO Authors
+        (author_id, first_name, last_name) VALUES(?,?,?);");
+$insert_author->bind_param("iss",$author_id,$author_firstname,$author_lastname);
 
+/*Insert Real Values */
+$author_id = 1;
+$author_firstname = "F. Scott";
+$author_lastname = "Fitzgerald";
+$insert_author->execute();
+$insert_author->close();
 
 
 /* Status Display */

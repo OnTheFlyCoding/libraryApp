@@ -380,13 +380,20 @@ $insert_author = $db_connection->prepare(
         (author_id, first_name, last_name) VALUES(?,?,?);");
 $insert_author->bind_param("iss",$author_id,$author_firstname,$author_lastname);
 
-/*Insert Real Values */
+
 $author_id = 1;
 $author_firstname = "F. Scott";
 $author_lastname = "Fitzgerald";
 $insert_author->execute();
-$insert_author->close();
 
+
+$insert_author->close();
+/*Categories */
+$insert_category = $db_connection->prepare(
+        "INSERT INTO Category
+        (category_id,category_name,category_description) VALUES(?,?,?)");
+$insert_category->bind_param("iss",$category_id,$category_name,$category_desc);
+/*REMEMBER TO ADD IN DATA */
 
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");

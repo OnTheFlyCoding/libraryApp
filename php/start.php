@@ -91,6 +91,36 @@ $create_contacts = $db_connection->prepare(
 $create_contacts->execute();
 $create_contacts->close();
 
+/*Authors*/
+$create_authors = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Authors(
+        author_id int NOT NULL AUTO_INCREMENT,
+        first_name varchar(255) NOT NULL,
+        last_name varchar(255) NOT NULL,
+        PRIMARY KEY(author_id));");
+$create_authors->execute();
+$create_authors->close();
+
+/*Category*/
+$create_category = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Category(
+        category_id int NOT NULL AUTO_INCREMENT,
+        category_name varchar(255) NOT NULL,
+        category_description varchar(255) NOT NULL,
+        PRIMARY KEY (category_id));");
+$create_category->execute();
+$create_category->close();
+
+/*Publisher*/
+$create_publisher = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Publishers(
+        pub_id int NOT NULL AUTO_INCREMENT,
+        publisher_name varchar(255) NOT NULL,
+        publisher_adress varchar(255),
+        PRIMARY KEY (pub_id));");
+$create_publisher->execute();
+$create_publisher->close();
+
 /* Below Are Tables That Have Foreign Keys */
 /* ------------------------------------------ */
 
@@ -118,6 +148,99 @@ $create_credentials = $db_connection->prepare(
 $create_credentials->execute();
 $create_credentials->close();
 
+/*Book*/
+$create_books = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Books(
+        book_id int NOT NULL AUTO_INCREMENT,
+        title varchar(255) NOT NULL,
+        isbn varchar(20) NOT NULL,
+        book_volume varchar(20) NOT NULL,
+        publication_year year NOT NULL,
+        pub_id int NOT NULL,
+        PRIMARY KEY(book_id),
+        FOREIGN KEY(pub_id) REFERENCES Publishers(pub_id));");
+$create_books->execute();
+$create_books->close();
+
+/*Book Author*/
+/*Composite Key*/
+$create_bookAuthors = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookAuthors(
+        author_id int NOT NULL AUTO_INCREMENT,
+        book_id int NOT NULL,
+        PRIMARY KEY(author_id,book_id),
+        FOREIGN KEY(author_id) REFERENCES Authors(author_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookAuthors->execute();
+$create_bookAuthors->close();
+
+/*Book Category*/
+/*Composite Key*/
+$create_bookCategories = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookCategories(
+        category_id int NOT NULL AUTO_INCREMENT,
+        book_id int NOT NULL,
+        PRIMARY KEY(category_id,book_id),
+        FOREIGN KEY(category_id) REFERENCES Category(category_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookCategories->execute();
+$create_bookCategories->close();
+
+/*Book Copy*/
+$create_bookCopies = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE BookCopies(
+        copy_id int NOT NULL AUTO_INCREMENT,
+        barcode int NOT NULL UNIQUE,
+        book_id int NOT NULL,
+        PRIMARY KEY(copy_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_bookCopies->execute();
+$create_bookCopies->close();
+
+/*Loan */
+$create_loans = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Loans(
+        loan_id int NOT NULL AUTO_INCREMENT,
+        user_id int NOT NULL,
+        copy_id int NOT NULL,
+        checkout_date date NOT NULL,
+        due_date date NOT NULL,
+        return_date date,
+        loan_status varchar(20),
+        fine decimal(8,2) DEFAULT(0),
+        PRIMARY KEY(loan_id),
+        FOREIGN KEY(user_id) REFERENCES Users(user_id),
+        FOREIGN KEY(copy_id) REFERENCES BookCopies(copy_id))");
+$create_loans->execute();
+$create_loans->close();
+
+/*Payment */
+$create_payments = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Payments(
+        payment_id int NOT NULL AUTO_INCREMENT,
+        loan_id int NOT NULL,
+        payment_day date,
+        payment_method varchar(20),
+        amount_paid decimal(8,2) DEFAULT(0),
+        PRIMARY KEY(payment_id),
+        FOREIGN KEY(loan_id) REFERENCES Loans(loan_id))");
+$create_payments->execute();
+$create_payments->close();
+
+/*Reservations */
+$create_reservations = $db_connection->prepare(
+        "CREATE OR REPLACE TABLE Reservations(
+        reservation_id int NOT NULL AUTO_INCREMENT,
+        user_id int NOT NULL,
+        book_id int NOT NULL,
+        reservation_date date NOT NULL,
+        expire_date date NOT NULL,
+        reservation_status varchar(20),
+        PRIMARY KEY(reservation_id),
+        FOREIGN KEY(user_id) REFERENCES Users(user_id),
+        FOREIGN KEY(book_id) REFERENCES Books(book_id))");
+$create_reservations->execute();
+$create_reservations->close();
 /* Status Display */
 echo nl2br("The database tables were successfully created.\r\n");
 
@@ -130,7 +253,9 @@ echo nl2br("The database tables were successfully created.\r\n");
 $insert_role = $db_connection->prepare(
 	"INSERT INTO Roles
     	(role_id, role_type) VALUES(?,?);");
-$insert_role->bind_param("is", $role_id, $role_title);
+$insert_role->bind_param(
+        "is",
+         $role_id, $role_title);
 
 $role_id = 1;
 $role_title = "administrator";
@@ -150,7 +275,10 @@ $insert_role->close();
 $insert_contacts = $db_connection->prepare(
 	"INSERT INTO Contacts
 		(contact_id, last_name, first_name, email, phone, street_1, street_2, city, state_code, post_code, updated) VALUES(?,?,?,?,?,?,?,?,?,?,?);");
-$insert_contacts->bind_param("issssssssis", $contact_id, $last_name, $first_name, $email, $phone, $street_1, $street_2, $city, $state_code, $post_code, $updated);
+$insert_contacts->bind_param(
+        "issssssssis",
+        $contact_id, $last_name, $first_name, $email, $phone,
+        $street_1, $street_2, $city, $state_code, $post_code, $updated);
 $contact_id = 1;
 $last_name = "Doe";
 $first_name = "John";
@@ -196,7 +324,9 @@ $insert_contacts->close();
 $insert_users = $db_connection->prepare(
 	"INSERT INTO Users
 		(user_id, role_id, contact_id, creation_date) VALUES(?,?,?,?);");
-$insert_users->bind_param("iiis", $user_id, $role_id, $contact_id, $creation_date);
+$insert_users->bind_param(
+        "iiis",
+        $user_id, $role_id, $contact_id, $creation_date);
 $user_id = 1;
 $role_id = 1;
 $contact_id = 1;
@@ -244,8 +374,26 @@ $insert_credentials->execute();
 
 $insert_credentials->close();
 
+/*Author */
+$insert_author = $db_connection->prepare(
+        "INSERT INTO Authors
+        (author_id, first_name, last_name) VALUES(?,?,?);");
+$insert_author->bind_param("iss",$author_id,$author_firstname,$author_lastname);
 
 
+$author_id = 1;
+$author_firstname = "F. Scott";
+$author_lastname = "Fitzgerald";
+$insert_author->execute();
+
+
+$insert_author->close();
+/*Categories */
+$insert_category = $db_connection->prepare(
+        "INSERT INTO Category
+        (category_id,category_name,category_description) VALUES(?,?,?)");
+$insert_category->bind_param("iss",$category_id,$category_name,$category_desc);
+/*REMEMBER TO ADD IN DATA */
 
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");

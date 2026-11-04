@@ -7,7 +7,6 @@
  * @date      2026-02-24
  * @version   1.0
  */
-// 
 if (!isset($_SESSION)) {
     // Only include session if not already started
     include_once (realpath(dirname(__FILE__).'/path.php'));
@@ -15,17 +14,11 @@ if (!isset($_SESSION)) {
     include_once (ROOT_PATH . '/php/session.php');
 }
 ?>
-<?php
-// Header Section
-?>
 <header class="mb-5">
-<?php
-// navigation bar
-?>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="../">   
-    <i class="bi bi-claude"></i>  Basic Login</a>
+    <i class="bi bi-book"></i> Library Prototype</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -39,38 +32,44 @@ if (!isset($_SESSION)) {
             echo '</li>';
           }
         ?>
+        
         <?php
-          /* User Information */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) { // Only display when user is logged in
+          /* Admin Navigation Links */
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) { 
             echo '<li class="nav-item"><a class="nav-link" href="index.php">Admin Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="#">New Page</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="books.php">Manage Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="loans.php">View All Loans</a></li>';
           }
         ?>
+
         <?php
-          /* User Information */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) { // Only display when user is logged in
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">User Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="#">New Page</a></li>';
+          /* Front End User Navigation Links */
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) { 
+            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="loans.php">Active Loans</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="reservations.php">Reservations</a></li>';
           }
         ?>
+
         <?php
-          /* User Information */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) { // Only display when user is logged in
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Guest Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="#">New Page</a></li>';
+          /* Guest Navigation Links */
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) { 
+            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
           }
         ?>
       </ul>
       <span class="navbar-text">
         <?php
-            /* User Information */
+            /* User Information & Logout */
             if (isset($_SESSION['user_first']) && isset($_SESSION['user_type'])) {
-                echo 'Welcome ' . $_SESSION['user_first'] . ' (' . $_SESSION['user_type'] . ')';
+                echo 'Welcome ' . htmlspecialchars($_SESSION['user_first']) . ' (' . htmlspecialchars($_SESSION['user_type']) . ')';
                 echo ' | <a href="../php/logout.php">Logout</a>';
             } else {
                 echo 'Not Logged In';
             }
-            ?>
+        ?>
       </span>
     </div>
   </div>

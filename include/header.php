@@ -13,11 +13,15 @@ if (!isset($_SESSION)) {
     // Include session file
     include_once (ROOT_PATH . '/php/session.php');
 }
+
+/* Brand link: send each role to its own dashboard, or to the login page if not logged in */
+$dashboards = [1 => '/admin/index.php', 2 => '/user/index.php', 3 => '/guest/index.php'];
+$brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.php');
 ?>
 <header class="mb-5">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="../">   
+    <a class="navbar-brand" href="<?php echo $brand_url; ?>">
     <i class="bi bi-book"></i> Library Prototype</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -28,7 +32,7 @@ if (!isset($_SESSION)) {
           /* Show Home link only when user is NOT logged in */
           if (!isset($_SESSION['user_name'])) {
             echo '<li class="nav-item">';
-            echo '<a class="nav-link active" aria-current="page" href="../">Home</a>';
+            echo '<a class="nav-link active" aria-current="page" href="' . BASE_URL . '/index.php">Home</a>';
             echo '</li>';
           }
         ?>

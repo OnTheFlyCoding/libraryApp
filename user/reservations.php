@@ -92,12 +92,15 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
                   $status = 'expired';
               }
             ?>
+            <?php /* One table row per reservation: book link, dates, status badge, Cancel button. */ ?>
             <tr>
+              <?php /* Book title links to its page, e.g. book.php?book_id=3 */ ?>
               <td><a href="book.php?book_id=<?= (int) $r['book_id'] ?>"><?= htmlspecialchars($r['title']) ?></a></td>
+              <?php /* strtotime() reads the date, date('M j, Y') prints it as "Nov 11, 2026" */ ?>
               <td><?= date('M j, Y', strtotime($r['reservation_date'])) ?></td>
               <td><?= date('M j, Y', strtotime($r['expire_date'])) ?></td>
               <td>
-                <?php /* ucfirst() = capital first letter: "active" -> "Active". ?? 'secondary' covers any other status. */ ?>
+                <?php /* Coloured label: $badge picks the colour, ucfirst() capitalises it ("active" -> "Active"). */ ?>
                 <span class="badge text-bg-<?= $badge[$status] ?? 'secondary' ?>"><?= htmlspecialchars(ucfirst($status)) ?></span>
               </td>
               <td>

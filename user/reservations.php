@@ -93,7 +93,7 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
               }
             ?>
             <tr>
-              <td><a href="reserve.php?book_id=<?= (int) $r['book_id'] ?>"><?= htmlspecialchars($r['title']) ?></a></td>
+              <td><a href="book.php?book_id=<?= (int) $r['book_id'] ?>"><?= htmlspecialchars($r['title']) ?></a></td>
               <td><?= date('M j, Y', strtotime($r['reservation_date'])) ?></td>
               <td><?= date('M j, Y', strtotime($r['expire_date'])) ?></td>
               <td>

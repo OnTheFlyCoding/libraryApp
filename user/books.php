@@ -111,7 +111,7 @@ $db_connection->close();
               <td><?= htmlspecialchars($book['publication_year']) ?></td>
               <td>
                 <?php /* (int) forces book_id to be a whole number, so nothing harmful can sneak into the link */ ?>
-                <a href="reserve.php?book_id=<?= (int) $book['book_id'] ?>" class="btn btn-sm btn-primary">Reserve / View</a>
+                <a href="book.php?book_id=<?= (int) $book['book_id'] ?>" class="btn btn-sm btn-primary">Reserve / View</a>
               </td>
             </tr>
           <?php endforeach; ?>

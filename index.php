@@ -37,7 +37,7 @@
               <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password" name="password" required>
             </div>
             
-            <?php include_once (ROOT_PATH . '/db/error_rprt.php'); ?>
+            <?php include_once (ROOT_PATH . '/php/error_rprt.php'); // shows login error/warning messages ?>
             <button type="submit" class="btn btn-primary">Log In</button>
           </form>
           <hr />

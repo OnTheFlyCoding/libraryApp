@@ -7,10 +7,11 @@
  * @date      2026-02-24
  * @version   1.0
  */
+/* Load BASE_URL and ROOT_PATH (from php/path.php) so the links below work on every page */
+include_once (dirname(__FILE__, 2) . '/php/path.php');
+
 if (!isset($_SESSION)) {
     // Only include session if not already started
-    include_once (realpath(dirname(__FILE__).'/path.php'));
-    // Include session file
     include_once (ROOT_PATH . '/php/session.php');
 }
 

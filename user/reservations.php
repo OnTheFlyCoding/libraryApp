@@ -63,7 +63,7 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
 <!doctype html>
 <html lang="en">
   <head>
-    <?php include_once (ROOT_PATH . '/include/head.php'); ?> // takes user to the page My Reservations - Library Prototype
+    <?php include_once (ROOT_PATH . '/include/head.php'); // loads meta tags, fonts and Bootstrap CSS ?>
     <title>My Reservations - Library Prototype</title>
   </head>
   <body class="<?= $page_name ?>">
@@ -113,8 +113,8 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
             </tr>
           <?php endforeach; ?>
 
-          <?php if (empty($reservations)): ?> // if the user's reservations list if empty
-            <tr><td colspan="5" class="text-center"> //it'll show a message saying they have no reservations yet
+          <?php if (empty($reservations)): // if the user's reservations list is empty, show a message ?>
+            <tr><td colspan="5" class="text-center">
               You have no reservations yet. <a href="books.php">Browse books</a>
             </td></tr>
           <?php endif; ?>

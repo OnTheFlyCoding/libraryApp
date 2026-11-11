@@ -70,7 +70,7 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
             /* User Information & Logout */
             if (isset($_SESSION['user_first']) && isset($_SESSION['user_type'])) {
                 echo 'Welcome ' . htmlspecialchars($_SESSION['user_first']) . ' (' . htmlspecialchars($_SESSION['user_type']) . ')';
-                echo ' | <a href="../php/logout.php">Logout</a>';
+                echo ' | <a href="' . BASE_URL . '/php/logout.php">Logout</a>'; // BASE_URL so it works from any folder
             } else {
                 echo 'Not Logged In';
             }

@@ -83,31 +83,31 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
           <tr><th>Book</th><th>Reserved On</th><th>Expires</th><th>Status</th><th>Action</th></tr>
         </thead>
         <tbody>
+          <?php /* Repeat the row below once per reservation; $r holds the current one (short for "reservation"). */ ?>
           <?php foreach ($reservations as $r): ?>
             <?php
-              /* An 'active' reservation whose expire date has passed is shown as 'expired'.
-                 Dates in Y-m-d format can be compared like normal text: "2026-11-10" < "2026-11-11". */
+              /* Copy the status into $status so we can relabel it for display without changing the database.
+                 An 'active' reservation past its expire date is shown as 'expired' ("2026-11-10" < "2026-11-11" works as text). */
               $status = $r['reservation_status'];
               if ($status === 'active' && $r['expire_date'] < $today) {
                   $status = 'expired';
               }
             ?>
-            <?php /* One table row per reservation: book link, dates, status badge, Cancel button. */ ?>
             <tr>
-              <?php /* Book title links to its page, e.g. book.php?book_id=3 */ ?>
+              <?php /* Title links to that book's page; (int) and htmlspecialchars() stop bad data from breaking the link or page. */ ?>
               <td><a href="book.php?book_id=<?= (int) $r['book_id'] ?>"><?= htmlspecialchars($r['title']) ?></a></td>
-              <?php /* strtotime() reads the date, date('M j, Y') prints it as "Nov 11, 2026" */ ?>
+              <?php /* The database gives "2026-11-11"; strtotime() + date('M j, Y') make it readable: "Nov 11, 2026". */ ?>
               <td><?= date('M j, Y', strtotime($r['reservation_date'])) ?></td>
               <td><?= date('M j, Y', strtotime($r['expire_date'])) ?></td>
               <td>
-                <?php /* Coloured label: $badge picks the colour, ucfirst() capitalises it ("active" -> "Active"). */ ?>
+                <?php /* $badge (top of file) turns the status into a Bootstrap colour, e.g. 'active' -> text-bg-success = green. */ ?>
                 <span class="badge text-bg-<?= $badge[$status] ?? 'secondary' ?>"><?= htmlspecialchars(ucfirst($status)) ?></span>
               </td>
               <td>
                 <?php if ($status === 'active'): // only active reservations can be cancelled ?>
-                  <?php /* onsubmit confirm() = pop-up "Are you sure?" box. Clicking Cancel in the pop-up stops the form. */ ?>
+                  <?php /* confirm() shows an "Are you sure?" pop-up; choosing Cancel there stops the form from sending. */ ?>
                   <form method="post" onsubmit="return confirm('Cancel this reservation?');">
-                    <?php /* hidden input = sends the reservation_id without showing it on the page */ ?>
+                    <?php /* Hidden input tells section 1 (top of file) WHICH reservation to cancel. */ ?>
                     <input type="hidden" name="reservation_id" value="<?= (int) $r['reservation_id'] ?>">
                     <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                   </form>

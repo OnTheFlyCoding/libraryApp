@@ -17,10 +17,19 @@ include_once (realpath(dirname(__FILE__, 2) . '/php/session.php'));
 /* Used as the <body> class below, handy for page-specific CSS */
 $page_name = "books";
 
+/* SEARCH: $_GET reads values from the URL, e.g. books.php?search=gatsby
+   trim() removes extra spaces. If there is no search, use an empty string ''. */
+$search = trim($_GET['search'] ?? '');
+
+/* % is a wildcard in SQL LIKE: "%gat%" matches any text containing "gat".
+   An empty search becomes "%%", which matches every book. */
+$like = "%" . $search . "%";
+
 /* ------------------------------------------------------------------
-   DATABASE: get every book with its publisher and author(s)
+   DATABASE: get books (matching the search) with publisher and author(s)
    - b, p, ba, a are short nicknames (aliases) for the tables.
    - LEFT JOIN keeps a book even if it has no publisher/author yet.
+   - WHERE ... LIKE ? filters by title OR isbn. The ? marks are filled in below.
    - GROUP_CONCAT joins several authors into one string, e.g. "A, B".
    - GROUP BY b.book_id = one row per book (needed for GROUP_CONCAT).
    ------------------------------------------------------------------ */
@@ -31,16 +40,21 @@ $query = "
     LEFT JOIN Publishers  p  ON b.pub_id     = p.pub_id
     LEFT JOIN BookAuthors ba ON b.book_id    = ba.book_id
     LEFT JOIN Authors     a  ON ba.author_id = a.author_id
+    WHERE b.title LIKE ? OR b.isbn LIKE ?
     GROUP BY b.book_id
     ORDER BY b.title";
 
-/* ->query() sends the SQL to MySQL. $result is the answer, or false if the SQL failed. */
-$result = $db_connection->query($query);
+/* Prepared statement: the user's search is sent separately from the SQL,
+   so it can never change the query itself (prevents SQL injection).
+   bind_param("ss", ...) = fill the two ? marks with two strings ("s" = string). */
+$stmt = $db_connection->prepare($query);
+$stmt->bind_param("ss", $like, $like);
+$stmt->execute();
 
-/* fetch_all(MYSQLI_ASSOC) turns ALL result rows into an array we can loop over.
-   MYSQLI_ASSOC = each row uses column names as keys, e.g. $book['title'].
-   The "? :" is a short if/else: if $result worked, fetch the rows, otherwise use an empty array []. */
-$books = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+/* get_result() gets the answer, fetch_all(MYSQLI_ASSOC) turns ALL rows into an array.
+   MYSQLI_ASSOC = each row uses column names as keys, e.g. $book['title']. */
+$books = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 /* We already have the data stored in $books, so close the database connection */
 $db_connection->close();
@@ -63,6 +77,17 @@ $db_connection->close();
       <h2>Available Books</h2>
       <p class="lead">Browse the library collection below.</p>
       <hr class="mb-4">
+
+      <?php /* Search form: method="get" puts the search in the URL (books.php?search=...)
+               and reloads this same page. value= keeps what the user typed in the box. */ ?>
+      <form method="get" class="d-flex gap-2 mb-4">
+        <input type="text" name="search" class="form-control" placeholder="Search by title or ISBN"
+               value="<?= htmlspecialchars($search) ?>">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+        <?php if ($search !== ''): // only show "Clear" while searching ?>
+          <a href="books.php" class="btn btn-outline-secondary">Clear</a>
+        <?php endif; ?>
+      </form>
 
       <table class="table table-striped table-hover">
         <thead>
@@ -93,7 +118,9 @@ $db_connection->close();
 
           <?php /* empty() is true when $books has no rows, so show a message instead of a blank table */ ?>
           <?php if (empty($books)): ?>
-            <tr><td colspan="6" class="text-center">No books found in the library database.</td></tr>
+            <tr><td colspan="6" class="text-center">
+              <?= $search !== '' ? 'No books match "' . htmlspecialchars($search) . '".' : 'No books found in the library database.' ?>
+            </td></tr>
           <?php endif; ?>
         </tbody>
       </table>

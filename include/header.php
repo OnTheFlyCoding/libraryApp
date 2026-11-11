@@ -41,27 +41,30 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
         <?php
           /* Admin Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Admin Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">Manage Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="loans.php">View All Loans</a></li>';
+            $dir = BASE_URL . '/admin/'; // full path to the admin folder, so links work from any page
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Admin Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">Manage Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">View All Loans</a></li>';
           }
         ?>
 
         <?php
           /* Front End User Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="loans.php">Active Loans</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="reservations.php">Reservations</a></li>';
+            $dir = BASE_URL . '/user/'; // full path to the user folder, so links work from any page
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">View Available Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">Active Loans</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'reservations.php">Reservations</a></li>';
           }
         ?>
 
         <?php
           /* Guest Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
+            /* Guests share the user books page (book.php hides Reserve/Borrow for them) */
+            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/guest/index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/user/books.php">View Available Books</a></li>';
           }
         ?>
       </ul>

@@ -116,6 +116,17 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
             </tr>
           <?php endforeach; ?>
 
+          <?php if (count($reservations) >= 3): /* If user is trying to reserve more than 3 books, 
+          show a warning message*/  ?>
+            <tr>
+              <td colspan="5" class="text-center">
+                <div class="alert alert-warning" role="alert">
+                  You have reserved more than 3 books. Please manage your reservations.
+                </div>
+              </td>
+            </tr>
+          <?php endif; ?>
+
           <?php if (empty($reservations)): // if the user's reservations list is empty, show a message ?>
             <tr><td colspan="5" class="text-center">
               You have no reservations yet. <a href="books.php">Browse books</a>

@@ -56,6 +56,8 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
             echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">View Available Books</a></li>';
             echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">Active Loans</a></li>';
             echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'reservations.php">Reservations</a></li>';
+            /* echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'account.php">My Account</a></li>'; */
+            /* Use the above for account editing for user if added. */
           }
         ?>
 

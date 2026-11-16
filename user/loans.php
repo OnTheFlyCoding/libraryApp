@@ -70,3 +70,79 @@ foreach ($loans as $l) {
 $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary'];
 $today = date('Y-m-d'); // used to spot overdue loans
 ?>
+<!doctype html>
+<html lang="en">
+  <head>
+    <?php include_once (ROOT_PATH . '/include/head.php'); // loads meta tags, fonts and Bootstrap CSS ?>
+    <title>My Loans - Library Prototype</title>
+  </head>
+  <body class="<?= $page_name ?>">
+    <?php include_once (ROOT_PATH . '/include/header.php'); ?>
+
+    <main class="container pb-5">
+      <h2>Active Loans</h2>
+      <p class="lead">
+        Books you have borrowed. Loans last 14 days.
+        You have <strong><?= $active_count ?> of <?= $max_loans ?></strong> books borrowed.
+      </p>
+      <hr class="mb-4">
+
+      <?php if ($message): ?>
+        <div class="alert alert-success"><?= $message ?></div>
+      <?php endif; ?>
+
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+          <tr><th>Book</th><th>Borrowed On</th><th>Due Date</th><th>Returned On</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          <?php /* Repeat the row below once per loan; $loan holds the current one. */ ?>
+          <?php foreach ($loans as $loan): ?>
+            <?php
+              /* Work out the status shown on the page (the database isn't changed):
+                 returned if it has a return_date, overdue if the due date has passed, otherwise active. */
+              if ($loan['return_date'] !== null) {
+                  $status = 'returned';
+              } elseif ($loan['due_date'] < $today) {
+                  $status = 'overdue';
+              } else {
+                  $status = 'active';
+              }
+            ?>
+            <tr>
+              <?php /* Title links to that book's page; (int) and htmlspecialchars() stop bad data from breaking the link or page. */ ?>
+              <td><a href="book.php?book_id=<?= (int) $loan['book_id'] ?>"><?= htmlspecialchars($loan['title']) ?></a></td>
+              <?php /* The database gives "2026-11-16"; strtotime() + date('M j, Y') make it readable: "Nov 16, 2026". */ ?>
+              <td><?= date('M j, Y', strtotime($loan['checkout_date'])) ?></td>
+              <td><?= date('M j, Y', strtotime($loan['due_date'])) ?></td>
+              <?php /* Not returned yet = show a dash instead of a date */ ?>
+              <td><?= $loan['return_date'] ? date('M j, Y', strtotime($loan['return_date'])) : '-' ?></td>
+              <td>
+                <?php /* $badge (top of file) turns the status into a Bootstrap colour, e.g. 'overdue' -> text-bg-danger = red. */ ?>
+                <span class="badge text-bg-<?= $badge[$status] ?>"><?= ucfirst($status) ?></span>
+              </td>
+              <td>
+                <?php if ($status !== 'returned'): // active and overdue books can both be returned ?>
+                  <?php /* confirm() shows an "Are you sure?" pop-up; choosing Cancel there stops the form from sending. */ ?>
+                  <form method="post" onsubmit="return confirm('Return this book?');">
+                    <?php /* Hidden input tells section 1 (top of file) WHICH loan to return. */ ?>
+                    <input type="hidden" name="loan_id" value="<?= (int) $loan['loan_id'] ?>">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Return</button>
+                  </form>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+
+          <?php if (empty($loans)): // if the user has no loans, show a message ?>
+            <tr><td colspan="6" class="text-center">
+              You have no borrowed books. <a href="books.php">Browse books</a>
+            </td></tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+    </main>
+
+    <?php include_once (ROOT_PATH . '/include/footer.php'); ?>
+  </body>
+</html>

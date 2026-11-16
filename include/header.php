@@ -7,10 +7,11 @@
  * @date      2026-02-24
  * @version   1.0
  */
+/* Load BASE_URL and ROOT_PATH (from php/path.php) so the links below work on every page */
+include_once (dirname(__FILE__, 2) . '/php/path.php');
+
 if (!isset($_SESSION)) {
     // Only include session if not already started
-    include_once (realpath(dirname(__FILE__).'/path.php'));
-    // Include session file
     include_once (ROOT_PATH . '/php/session.php');
 }
 
@@ -40,27 +41,30 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
         <?php
           /* Admin Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Admin Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">Manage Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="loans.php">View All Loans</a></li>';
+            $dir = BASE_URL . '/admin/'; // full path to the admin folder, so links work from any page
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Admin Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">Manage Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">View All Loans</a></li>';
           }
         ?>
 
         <?php
           /* Front End User Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="loans.php">Active Loans</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="reservations.php">Reservations</a></li>';
+            $dir = BASE_URL . '/user/'; // full path to the user folder, so links work from any page
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">View Available Books</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">Active Loans</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'reservations.php">Reservations</a></li>';
           }
         ?>
 
         <?php
           /* Guest Navigation Links */
           if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) { 
-            echo '<li class="nav-item"><a class="nav-link" href="index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="books.php">View Available Books</a></li>';
+            /* Guests share the user books page (book.php hides Reserve/Borrow for them) */
+            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/guest/index.php">Dashboard</a></li>';
+            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/user/books.php">View Available Books</a></li>';
           }
         ?>
       </ul>
@@ -69,7 +73,7 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
             /* User Information & Logout */
             if (isset($_SESSION['user_first']) && isset($_SESSION['user_type'])) {
                 echo 'Welcome ' . htmlspecialchars($_SESSION['user_first']) . ' (' . htmlspecialchars($_SESSION['user_type']) . ')';
-                echo ' | <a href="../php/logout.php">Logout</a>';
+                echo ' | <a href="' . BASE_URL . '/php/logout.php">Logout</a>'; // BASE_URL so it works from any folder
             } else {
                 echo 'Not Logged In';
             }

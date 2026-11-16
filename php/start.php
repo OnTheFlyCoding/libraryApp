@@ -318,6 +318,20 @@ $post_code = 67890;
 $updated = date("Y-m-d H:i:s");
 $insert_contacts->execute();
 
+/* Second test user (role 2), for testing that loans/reservations are kept separate per user */
+$contact_id = 4;
+$last_name = "Jones";
+$first_name = "Bob";
+$email = "bobjones@example.com";
+$phone = "222-333-4444";
+$street_1 = "321 Pine St";
+$street_2 = "";
+$city = "Newtown";
+$state_code = "CT";
+$post_code = 11111;
+$updated = date("Y-m-d H:i:s");
+$insert_contacts->execute();
+
 $insert_contacts->close();
 
 /* Users */
@@ -345,6 +359,12 @@ $contact_id = 3;
 $creation_date = date("Y-m-d H:i:s");
 $insert_users->execute();
 
+$user_id = 4;
+$role_id = 2; // regular user, same as janesmith
+$contact_id = 4;
+$creation_date = date("Y-m-d H:i:s");
+$insert_users->execute();
+
 $insert_users->close();
 
 
@@ -366,10 +386,17 @@ $password_salted = crypt("SCSU2025", $salt);
 //$password_salted = password_hash("mypassword", PASSWORD_DEFAULT);
 $insert_credentials->execute();
 
+
+
 $user_id = 3;
 $username = "charliebrown";
 $password_salted = crypt("SCSU2026", $salt);
 //$password_salted = password_hash("charlie123", PASSWORD_DEFAULT);
+$insert_credentials->execute();
+
+$user_id = 4;
+$username = "bobjones";
+$password_salted = crypt("SCSU2025", $salt); // same password as janesmith
 $insert_credentials->execute();
 
 $insert_credentials->close();

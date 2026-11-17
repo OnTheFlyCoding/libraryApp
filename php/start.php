@@ -11,6 +11,15 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+// End session if one has been created during development //
+session_start();
+
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
+$_SESSION = array();
+session_destroy();
+
 /* the first connection to the database */
 DEFINE('DB_HOST', "localhost");
 DEFINE('DB_USER', "root");
@@ -116,7 +125,7 @@ $create_publisher = $db_connection->prepare(
         "CREATE OR REPLACE TABLE Publishers(
         pub_id int NOT NULL AUTO_INCREMENT,
         publisher_name varchar(255) NOT NULL,
-        publisher_adress varchar(255),
+        publisher_address varchar(255),
         PRIMARY KEY (pub_id));");
 $create_publisher->execute();
 $create_publisher->close();
@@ -371,8 +380,19 @@ $username = "charliebrown";
 $password_salted = crypt("SCSU2026", $salt);
 //$password_salted = password_hash("charlie123", PASSWORD_DEFAULT);
 $insert_credentials->execute();
-
+//End query
 $insert_credentials->close();
+/*
+ Insert Publisher, Author, and Category data here as needed.
+ */
+$db_connection -> query(
+        "
+INSERT INTO Publishers (pub_id, publisher_name,publisher_address)
+VALUES
+(1, 'Scribner', '123 Main St , New York, NY 10001'),
+(2, 'Penguin', '456 Oak St, New York, NY 10002'),
+(3, 'HarperCollins', '789 Pine St, New York, NY 10003'),
+(4, 'St. Martin''s Press', '101 Elm St, New York, NY 10004');");
 
 /*Author */
 $insert_author = $db_connection->prepare(
@@ -385,6 +405,19 @@ $author_id = 1;
 $author_firstname = "F. Scott";
 $author_lastname = "Fitzgerald";
 $insert_author->execute();
+// Insert remaining authors
+
+// $db_connection ->query("
+// INSERT INTO Authors (author_id, first_name, last_name) VALUES
+// (2, 'George', 'Orwell'),
+// (3, 'Harper', 'Lee'),
+// (4, 'J.K.', 'Rowling'),
+// (5, 'J.R.R.', 'Tolkien'),
+// (6, 'Jane', 'Austen'),
+// (7, 'Mark', 'Twain'),
+// (8, 'Ernest', 'Hemingway'),
+// (9, 'Leo', 'Tolstoy'),
+// (10, 'Charles', 'Dickens');");
 
 
 $insert_author->close();
@@ -394,6 +427,7 @@ $insert_category = $db_connection->prepare(
         (category_id,category_name,category_description) VALUES(?,?,?)");
 $insert_category->bind_param("iss",$category_id,$category_name,$category_desc);
 /*REMEMBER TO ADD IN DATA */
+
 
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");

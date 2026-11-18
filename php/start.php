@@ -11,6 +11,15 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
+// End session if one has been created during development //
+session_start();
+
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
+$_SESSION = array();
+session_destroy();
+
 /* the first connection to the database */
 DEFINE('DB_HOST', "localhost");
 DEFINE('DB_USER', "root");
@@ -116,7 +125,7 @@ $create_publisher = $db_connection->prepare(
         "CREATE OR REPLACE TABLE Publishers(
         pub_id int NOT NULL AUTO_INCREMENT,
         publisher_name varchar(255) NOT NULL,
-        publisher_adress varchar(255),
+        publisher_address varchar(255),
         PRIMARY KEY (pub_id));");
 $create_publisher->execute();
 $create_publisher->close();
@@ -399,7 +408,18 @@ $username = "bobjones";
 $password_salted = crypt("SCSU2025", $salt); // same password as janesmith
 $insert_credentials->execute();
 
+//End query
 $insert_credentials->close();
+/*
+ Insert Publisher Data
+ */
+$db_connection -> query(
+        "INSERT INTO Publishers (pub_id, publisher_name,publisher_address) VALUES
+(1, 'Scribner', '123 Main St , New York, NY 10001'),
+(2, 'Penguin', '456 Oak St, New York, NY 10002'),
+(3, 'HarperCollins', '789 Pine St, New York, NY 10003'),
+(4, 'St. Martin''s Press', '101 Elm St, New York, NY 10004'),
+(5, 'George Allen & Unwin', '101 Oxford Street, London, UK W1D 1AA');");
 
 /*Author */
 $insert_author = $db_connection->prepare(
@@ -412,16 +432,90 @@ $author_id = 1;
 $author_firstname = "F. Scott";
 $author_lastname = "Fitzgerald";
 $insert_author->execute();
-
+//*****************************/
+// INSERT AUTHORS
+//*****************************/
+$db_connection -> query(
+        "INSERT INTO authors (author_id, first_name, last_name) VALUES
+(2, 'Kristin', 'Hannah'),
+(3, 'Harper', 'Lee'),
+(4, 'George', 'Orwell'),
+(5, 'Terry', 'Pratchett'),
+(6, 'Neil', 'Gaiman'),
+(7, 'Ernest', 'Hemingway');");
 
 $insert_author->close();
-/*Categories */
+//*****************************/
+// INSERT CATEGORY
+//*****************************/
 $insert_category = $db_connection->prepare(
         "INSERT INTO Category
         (category_id,category_name,category_description) VALUES(?,?,?)");
 $insert_category->bind_param("iss",$category_id,$category_name,$category_desc);
 /*REMEMBER TO ADD IN DATA */
+$category_id = 1;
+$category_name = "Sci-Fy";
+$category_desc = "Science fiction books that explore futuristic concepts, advanced technology, and imaginative worlds.";
+$insert_category->execute();
+$insert_category->close();
 
+$db_connection -> query(
+        "INSERT INTO Category (category_id, category_name, category_description) VALUES
+        (2,'Fantasy','Stories featuring magical elements, mythical creatures, or imaginary worlds'),
+        (3,'Mystery','Stories centered around solving crimes, puzzles, or unexplained events'),
+        (4,'Romance','Stories focused on relationships, love, and emotional connections'),
+        (5,'Thriller','Fast-paced stories filled with suspense, tension, and high stakes'),
+        (6,'Historical Fiction','Fictional stories set during real historical periods or events'),
+        (7,'Non-Fiction','Works based on real people, facts, events, or experiences'),
+        (8,'Math','Books covering mathematical concepts, theories, and problem-solving techniques'),
+        (9,'Children''s Literature','Books written primarily for young readers and learners'),
+        (10,'Horror','Stories intended to create fear, suspense, or a sense of unease');");
+
+//*****************************/
+// INSERT BOOKS
+//*****************************/
+$db_connection -> query(
+        "INSERT INTO Books (book_id, title, isbn, book_volume, publication_year, pub_id) VALUES
+    (1,'The Great Gatsby', '978-0-7432-0001-1', 1, 1925, 1),
+        (2,'Tender Is The Night', '978-0-7432-0002-2',1,1934, 1),
+        (3,'To Kill a Mockingbird', '978-0-0609-0003-3', 1, 1960, 3),
+        (4,'1984', '978-0-7432-0004-4', 1, 1949, 2),
+        (5,'The Hobbit', '978-0-0609-0005-5', 1, 1937, 4),
+        (6,'The Great Alone', '978-0-7432-0006-6',1,2018, 4),
+        (7,'Animal Farm','978-0-0609-0007-7',1,1945,2),
+        (8,'Good Omens','978-0-0609-0008-8',1,1990,3),
+        (9,'The Good Man and the sea','978-0-0609-0009-9',1,1952,1);");
+
+//*****************************/
+// INSERT BOOK-AUTHORS//
+//*****************************/
+$db_connection -> query(
+        "INSERT INTO BookAuthors (author_id, book_id) VALUES
+        (1,1),
+        (1,2),
+        (3,3),
+        (2,4),
+        (4,5),
+        (4,6),
+        (2,7),
+        (3,8),
+        (1,9);");
+$db_connection -> query(
+        "INSERT INTO BookCopies (copy_id, barcode, book_id) VALUES
+        (1, 100001,1),
+        (2, 100002,1),
+        (3, 100003,2),
+        (4, 100004,2),
+        (5, 100005,3),
+        (6, 100006,3),
+        (7, 100007,4),
+        (8, 100008,4),
+        (9, 100009,5),
+        (10, 100010,6),
+        (11, 100011,6),
+        (12, 100012,7),
+        (13, 100013,8),
+        (14, 100014,8);");
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");
 /* Return to homepage after 5 seconds */

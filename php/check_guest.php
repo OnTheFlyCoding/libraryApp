@@ -8,9 +8,9 @@
  * @date      2026-02-24
  * @version   1.0
  */
-// Check if user role is 2 (guest user)
+// Check if user role is 3 (guest user)
 
-if($user_role == 2){
+if($user_role == 3){
   // Everything is working
   // See Console Output
   echo '<script>console.log("Everything is Working");</script>';

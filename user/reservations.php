@@ -11,6 +11,7 @@ include_once (realpath(dirname(__FILE__, 2) . '/php/session.php'));
 
 $page_name = "reservations";
 $user_id   = $_SESSION['user_id'];
+$max_reservations = 3; // reservation limit, should match $max_reservations in book.php
 $message   = '';
 
 /* ------------------------------------------------------------------
@@ -59,6 +60,14 @@ $db_connection->close();
 /* Bootstrap badge colour for each status (green, grey, yellow) */
 $badge = ['active' => 'success', 'cancelled' => 'secondary', 'expired' => 'warning'];
 $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
+
+// Count only active, not-expired reservations (cancelled/expired ones don't count toward the limit)
+$active_count = 0;
+foreach ($reservations as $r) {
+    if ($r['reservation_status'] === 'active' && $r['expire_date'] >= $today) {
+        $active_count++;
+    }
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -71,11 +80,20 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
 
     <main class="container pb-5">
       <h2>My Reservations</h2>
-      <p class="lead">Books you have reserved. Reservations last 7 days.</p>
+      <p class="lead">
+        Books you have reserved. Reservations last 7 days.
+        You have <strong><?= $active_count ?> of <?= $max_reservations ?></strong> reservations.
+      </p>
       <hr class="mb-4">
 
       <?php if ($message): ?>
         <div class="alert alert-success"><?= $message ?></div>
+      <?php endif; ?>
+
+      <?php if ($active_count >= $max_reservations): // at the limit, so book.php hides the Reserve button ?>
+        <div class="alert alert-warning">
+          You have reached the limit of <?= $max_reservations ?> reservations. Cancel one to reserve another book.
+        </div>
       <?php endif; ?>
 
       <table class="table table-striped table-hover align-middle">
@@ -115,17 +133,6 @@ $today = date('Y-m-d'); // e.g. 2026-11-11, used to spot expired reservations
               </td>
             </tr>
           <?php endforeach; ?>
-
-          <?php if (count($reservations) >= 3): /* If user is trying to reserve more than 3 books, 
-          show a warning message*/  ?>
-            <tr>
-              <td colspan="5" class="text-center">
-                <div class="alert alert-warning" role="alert">
-                  You have reserved more than 3 books. Please manage your reservations.
-                </div>
-              </td>
-            </tr>
-          <?php endif; ?>
 
           <?php if (empty($reservations)): // if the user's reservations list is empty, show a message ?>
             <tr><td colspan="5" class="text-center">

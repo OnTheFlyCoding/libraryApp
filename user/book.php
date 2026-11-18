@@ -83,6 +83,17 @@ $check->bind_result($loan_count);
 $check->fetch();
 $check->close();
 
+/* 3d. How many active (not expired) reservations does this user have? (for the $max_reservations limit) */
+$max_reservations = 3; // most books one user can have reserved at the same time
+$check = $db_connection->prepare("
+    SELECT COUNT(*) FROM Reservations
+    WHERE user_id = ? AND reservation_status = 'active' AND expire_date >= CURDATE()");
+$check->bind_param("i", $user_id);
+$check->execute();
+$check->bind_result($reservation_count);
+$check->fetch();
+$check->close();
+
 /* Which button was clicked? Each button sends name="action" with value "reserve" or "borrow". */
 $action = $_POST['action'] ?? '';
 
@@ -90,9 +101,10 @@ $action = $_POST['action'] ?? '';
    4. RESERVE BUTTON CLICKED?
    The form below uses method="post", so clicking it reloads this page as a POST.
    Only regular users (role 2) can reserve, the book must exist,
-   they can't reserve the same book twice, or reserve a book they already borrowed.
+   they can't reserve the same book twice, or reserve a book they already borrowed,
+   and they must be under the $max_reservations limit.
    ------------------------------------------------------------------ */
-if ($action === 'reserve' && $_SESSION['user_role'] == 2 && $book && !$has_reservation && !$has_loan) {
+if ($action === 'reserve' && $_SESSION['user_role'] == 2 && $book && !$has_reservation && !$has_loan && $reservation_count < $max_reservations) {
     /* DATE_ADD(..., INTERVAL 7 DAY) = the reservation lasts one week */
     $insert = $db_connection->prepare("
         INSERT INTO Reservations (user_id, book_id, reservation_date, expire_date, reservation_status)
@@ -191,16 +203,21 @@ $db_connection->close();
                 <?php if ($has_copy && $loan_count < $max_loans): ?>
                   <button type="submit" name="action" value="borrow" class="btn btn-success"><i class="bi bi-box-arrow-right"></i> Borrow this book</button>
                 <?php endif; ?>
-                <?php if (!$has_reservation): ?>
+                <?php if (!$has_reservation && $reservation_count < $max_reservations): ?>
                   <button type="submit" name="action" value="reserve" class="btn btn-primary"><i class="bi bi-bookmark-plus"></i> Reserve this book</button>
                 <?php endif; ?>
               </form>
 
               <?php /* Explain why the Borrow button is missing */ ?>
               <?php if (!$has_copy): ?>
-                <p class="text-muted mt-2 mb-0">No copies available right now. You can reserve it instead.</p>
+                <p class="text-muted mt-2 mb-0">No copies available right now.</p>
               <?php elseif ($loan_count >= $max_loans): ?>
                 <p class="text-muted mt-2 mb-0">You have reached the limit of <?= $max_loans ?> borrowed books. Return one to borrow more.</p>
+              <?php endif; ?>
+
+              <?php /* Explain why the Reserve button is missing (only if they haven't reserved this book already) */ ?>
+              <?php if (!$has_reservation && $reservation_count >= $max_reservations): ?>
+                <p class="text-muted mt-2 mb-0">You have reached the limit of <?= $max_reservations ?> reservations. <a href="reservations.php">Cancel one</a> to reserve more.</p>
               <?php endif; ?>
             <?php endif; ?>
           </div>

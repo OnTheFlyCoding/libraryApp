@@ -25,6 +25,12 @@ function nav_link($url, $text) {
     $current = ($url === $_SERVER['SCRIPT_NAME']);
     echo '<li class="nav-item"><a class="nav-link' . ($current ? ' active" aria-current="page' : '') . '" href="' . $url . '">' . $text . '</a></li>';
 }
+
+/* Same idea as nav_link(), but for a link inside a dropdown menu (class "dropdown-item") */
+function dropdown_item($url, $text) {
+    $current = ($url === $_SERVER['SCRIPT_NAME']);
+    echo '<li><a class="dropdown-item' . ($current ? ' active" aria-current="page' : '') . '" href="' . $url . '">' . $text . '</a></li>';
+}
 ?>
 <?php /* Skip link: hidden until a keyboard user presses Tab, then it lets them jump past the navbar.
          href="#main" goes to the element with id="main" (the <main> tag on each page). */ ?>
@@ -54,8 +60,19 @@ function nav_link($url, $text) {
             nav_link($dir . 'books.php', 'Manage Books');
             nav_link($dir . 'loans.php', 'View All Loans');
             nav_link($dir . 'users.php', 'Manage Users');
-            nav_link($dir . 'authors.php', 'Authors');
-            nav_link($dir . 'publishers.php', 'Publishers');
+
+            /* "Catalog" dropdown groups the smaller pages so the navbar stays on one line.
+               data-bs-toggle="dropdown" makes Bootstrap open the menu when it's clicked.
+               The Catalog button itself is highlighted when we're on one of its pages. */
+            $catalog_pages = [$dir . 'authors.php', $dir . 'publishers.php'];
+            $in_catalog    = in_array($_SERVER['SCRIPT_NAME'], $catalog_pages);
+            echo '<li class="nav-item dropdown">';
+            echo '<a class="nav-link dropdown-toggle' . ($in_catalog ? ' active' : '') . '" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Catalog</a>';
+            echo '<ul class="dropdown-menu">';
+            dropdown_item($dir . 'authors.php', 'Authors');
+            dropdown_item($dir . 'publishers.php', 'Publishers');
+            echo '</ul>';
+            echo '</li>';
           }
         ?>
 

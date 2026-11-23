@@ -96,6 +96,8 @@ foreach ($reservations as $r) {
         </div>
       <?php endif; ?>
 
+      <?php /* table-responsive: on small screens only the table scrolls sideways, not the whole page */ ?>
+      <div class="table-responsive">
       <table class="table table-striped table-hover align-middle">
         <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
@@ -142,6 +144,7 @@ foreach ($reservations as $r) {
           <?php endif; ?>
         </tbody>
       </table>
+      </div>
     </main>
 
     <?php include_once (ROOT_PATH . '/include/footer.php'); ?>

@@ -10,10 +10,12 @@
 /* Load BASE_URL (from php/path.php) so the main.js link below works from any folder */
 include_once (dirname(__FILE__, 2) . '/php/path.php');
 
-/* pe-none (Bootstrap "pointer-events: none") lets clicks pass through the footer
-   to the buttons behind it, since fixed-bottom keeps it on top of the page. */
+/* fixed-bottom keeps the footer on screen at the bottom.
+   bg-body-tertiary gives it the same solid background as the navbar, so page text
+   doesn't show through it. The body has extra space at the bottom (css/style.css),
+   so the last part of every page can scroll up above the footer instead of hiding behind it. */
 ?>
-<footer class="footer fixed-bottom pe-none">
+<footer class="footer fixed-bottom bg-body-tertiary border-top">
   <div class="container py-2">
     <div class="row">
       <div class="col-sm fs-6 text-center">

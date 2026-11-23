@@ -37,3 +37,10 @@ body {
   padding: 0;
   background-color: #f4f4f4;
 }
+
+/* The footer is fixed to the bottom of the screen (include/footer.php).
+   This space at the bottom of the page lets the last table row or button
+   scroll up above the footer instead of being hidden behind it. */
+body {
+  padding-bottom: 4rem;
+}

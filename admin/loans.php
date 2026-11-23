@@ -119,6 +119,8 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
         <?php endif; ?>
       </form>
 
+      <?php /* table-responsive: on small screens only the table scrolls sideways, not the whole page */ ?>
+      <div class="table-responsive">
       <table class="table table-striped table-hover align-middle">
         <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
@@ -146,6 +148,7 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
           <?php endif; ?>
         </tbody>
       </table>
+      </div>
 
       <?php include_once (ROOT_PATH . '/include/pagination.php'); // Previous / 1 2 3 / Next bar ?>
     </main>

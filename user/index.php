@@ -67,6 +67,8 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
       <hr class="mb-4">
       <section class="mb-4">
       <h2>User Information</h2>
+      <?php /* table-responsive: on small screens only the table scrolls sideways, not the whole page */ ?>
+      <div class="table-responsive">
       <table class="table">
   <thead>
     <tr>
@@ -117,6 +119,7 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
 
   </tbody>
 </table>
+</div>
 </section>
       
     </div>

@@ -52,6 +52,15 @@ $books = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
 $db_connection->close();
+
+/* ------------------------------------------------------------------
+   2. PAGINATION: 10 books per page (same code as user/books.php).
+   min/max keep ?page= between 1 and the last page; array_slice() cuts out that page's rows.
+   ------------------------------------------------------------------ */
+$per_page      = 10;
+$total_pages   = max(1, (int) ceil(count($books) / $per_page));
+$page          = min(max(1, (int) ($_GET['page'] ?? 1)), $total_pages);
+$books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
 ?>
 <!doctype html>
 <html lang="en">
@@ -64,7 +73,7 @@ $db_connection->close();
 
     <main class="container pb-5">
       <h2>Manage Books</h2>
-      <p class="lead">Search the library collection. <?= count($books) ?> book(s) shown.</p>
+      <p class="lead">Search the library collection. <?= count($books) ?> book(s) found.</p>
       <hr class="mb-4">
 
       <?php /* Search form: method="get" reloads this page with ?search=... in the URL.
@@ -83,7 +92,7 @@ $db_connection->close();
           <tr><th>Title</th><th>Author(s)</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Copies</th></tr>
         </thead>
         <tbody>
-          <?php foreach ($books as $book): ?>
+          <?php foreach ($books_on_page as $book): // only this page's books ?>
             <?php $available = $book['total_copies'] - $book['on_loan']; // copies still on the shelf ?>
             <tr>
               <td><?= htmlspecialchars($book['title']) ?></td>
@@ -105,6 +114,8 @@ $db_connection->close();
           <?php endif; ?>
         </tbody>
       </table>
+
+      <?php include_once (ROOT_PATH . '/include/pagination.php'); // Previous / 1 2 3 / Next bar ?>
     </main>
 
     <?php include_once (ROOT_PATH . '/include/footer.php'); ?>

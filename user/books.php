@@ -59,6 +59,18 @@ $stmt->close();
 /* We already have the data stored in $books, so close the database connection */
 $db_connection->close();
 
+/* ------------------------------------------------------------------
+   PAGINATION: show 10 books per page instead of one very long table.
+   ?page=2 in the URL picks the page. min/max keep it between 1 and the last page,
+   so a made-up value like ?page=999 can't break anything.
+   array_slice() cuts out just the 10 rows for that page.
+   The Previous / 1 2 3 / Next bar is in include/pagination.php.
+   ------------------------------------------------------------------ */
+$per_page      = 10;
+$total_pages   = max(1, (int) ceil(count($books) / $per_page)); // e.g. 25 books -> 3 pages
+$page          = min(max(1, (int) ($_GET['page'] ?? 1)), $total_pages);
+$books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
+
 /* The ?> below ends PHP. Everything after it is normal HTML,
    with small bits of PHP dropped in wherever we need data. */
 ?>
@@ -102,7 +114,7 @@ $db_connection->close();
              displays them instead of running them as code (prevents XSS attacks).
              ?? : use the right side if the left side is empty, e.g. 'Unknown'. */
           ?>
-          <?php foreach ($books as $book): ?>
+          <?php foreach ($books_on_page as $book): // only this page's books ?>
             <tr>
               <td><?= htmlspecialchars($book['title']) ?></td>
               <td><?= htmlspecialchars($book['authors'] ?? 'Unknown') ?></td>
@@ -124,6 +136,8 @@ $db_connection->close();
           <?php endif; ?>
         </tbody>
       </table>
+
+      <?php include_once (ROOT_PATH . '/include/pagination.php'); // Previous / 1 2 3 / Next bar ?>
     </main>
 
     <?php include_once (ROOT_PATH . '/include/footer.php'); ?>

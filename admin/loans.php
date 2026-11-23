@@ -69,6 +69,15 @@ foreach ($loans as $loan) {
     }
 }
 
+/* ------------------------------------------------------------------
+   3. PAGINATION: 10 loans per page (same code as the books pages).
+   Done AFTER the status filter, so the pages only contain matching loans.
+   ------------------------------------------------------------------ */
+$per_page      = 10;
+$total_pages   = max(1, (int) ceil(count($shown) / $per_page));
+$page          = min(max(1, (int) ($_GET['page'] ?? 1)), $total_pages);
+$loans_on_page = array_slice($shown, ($page - 1) * $per_page, $per_page);
+
 /* Bootstrap badge colour for each status (green, red, grey) */
 $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary'];
 ?>
@@ -112,7 +121,7 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
           <tr><th>Member</th><th>Book</th><th>Copy</th><th>Borrowed On</th><th>Due Date</th><th>Returned On</th><th>Status</th></tr>
         </thead>
         <tbody>
-          <?php foreach ($shown as $loan): ?>
+          <?php foreach ($loans_on_page as $loan): // only this page's loans ?>
             <tr>
               <td>
                 <?= htmlspecialchars($loan['first_name'] . ' ' . $loan['last_name']) ?>
@@ -133,6 +142,8 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
           <?php endif; ?>
         </tbody>
       </table>
+
+      <?php include_once (ROOT_PATH . '/include/pagination.php'); // Previous / 1 2 3 / Next bar ?>
     </main>
 
     <?php include_once (ROOT_PATH . '/include/footer.php'); ?>

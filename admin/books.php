@@ -1,17 +1,21 @@
 <?php
-
+/**
+ * Manage Books (Administrators)
+ * Search books by title, ISBN or author, and see how many copies are on the shelf.
+ * (Add / Delete Books will be added to this page later.)
+ */
 error_reporting(E_ALL);
-ini_set('display_errors', 0);
+ini_set('display_errors', 0); // Set to 1 while debugging
 
-/* Session */
-include_once(realpath(dirname(__FILE__, 2) . '/php/session.php'));
-include_once(realpath(dirname(__FILE__, 2) . '/php/path.php'));
+/* session.php = session + login check + $db_connection */
+include_once (realpath(dirname(__FILE__, 2) . '/php/session.php'));
 
-/* Admin Check */
-include_once(ROOT_SRC_PATH . '/check_admin.php');
+/* Only admins (role 1) can see this page; everyone else is sent to logout */
+include_once (ROOT_SRC_PATH . '/check_admin.php');
 
-/* Page Name */
 $page_name = "adminBooks";
+
+/* SEARCH: $_GET reads the search from the URL, e.g. books.php?search=orwell */
 $search = trim($_GET['search'] ?? '');
 
 /* % is a wildcard in SQL LIKE: "%gat%" matches any text containing "gat".
@@ -19,61 +23,54 @@ $search = trim($_GET['search'] ?? '');
 $like = "%" . $search . "%";
 
 /* ------------------------------------------------------------------
-   DATABASE: get books (matching the search) with publisher and author(s)
-   - b, p, ba, a are short nicknames (aliases) for the tables.
-   - LEFT JOIN keeps a book even if it has no publisher/author yet.
-   - WHERE ... LIKE ? filters by title OR isbn. The ? marks are filled in below.
+   1. GET BOOKS (matching the search) with publisher, author(s) and copy counts
+   - Same joins as user/books.php: LEFT JOIN keeps books with no publisher/author.
    - GROUP_CONCAT joins several authors into one string, e.g. "A, B".
-   - GROUP BY b.book_id = one row per book (needed for GROUP_CONCAT).
+   - The two (SELECT COUNT(*) ...) are small queries run for each book:
+       total_copies = how many copies the library owns
+       on_loan      = how many of those copies are borrowed right now
+   - HAVING (instead of WHERE) runs AFTER the authors are joined together,
+     so the search can also match the author list, not just title and ISBN.
    ------------------------------------------------------------------ */
-$query = "
+$stmt = $db_connection->prepare("
     SELECT b.book_id, b.title, b.isbn, b.publication_year, p.publisher_name,
-           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors
+           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors,
+           (SELECT COUNT(*) FROM BookCopies bc WHERE bc.book_id = b.book_id) AS total_copies,
+           (SELECT COUNT(*) FROM BookCopies bc
+              INNER JOIN Loans l ON l.copy_id = bc.copy_id
+              WHERE bc.book_id = b.book_id AND l.return_date IS NULL) AS on_loan
     FROM Books b
     LEFT JOIN Publishers  p  ON b.pub_id     = p.pub_id
     LEFT JOIN BookAuthors ba ON b.book_id    = ba.book_id
     LEFT JOIN Authors     a  ON ba.author_id = a.author_id
-    WHERE b.title LIKE ? OR b.isbn LIKE ?
     GROUP BY b.book_id
-    ORDER BY b.title";
-
-/* Prepared statement: the user's search is sent separately from the SQL,
-   so it can never change the query itself (prevents SQL injection).
-   bind_param("ss", ...) = fill the two ? marks with two strings ("s" = string). */
-$stmt = $db_connection->prepare($query);
-$stmt->bind_param("ss", $like, $like);
+    HAVING b.title LIKE ? OR b.isbn LIKE ? OR authors LIKE ?
+    ORDER BY b.title");
+$stmt->bind_param("sss", $like, $like, $like); // fill the three ? marks with the search
 $stmt->execute();
-
-/* get_result() gets the answer, fetch_all(MYSQLI_ASSOC) turns ALL rows into an array.
-   MYSQLI_ASSOC = each row uses column names as keys, e.g. $book['title']. */
 $books = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-/* We already have the data stored in $books, so close the database connection */
 $db_connection->close();
-
 ?>
-
 <!doctype html>
 <html lang="en">
   <head>
-    <?php /* ROOT_PATH = full folder path on disk to csc235_login (from path.php) */ ?>
-    <?php include_once (ROOT_PATH . '/include/head.php'); ?>
-    <title>Available Books - Library Prototype</title>
+    <?php include_once (ROOT_PATH . '/include/head.php'); // loads meta tags, fonts and Bootstrap CSS ?>
+    <title>Manage Books - Library Prototype</title>
   </head>
-  <?php /* <?= something ?> is short for <?php echo something; ?> (prints a value into the HTML) */ ?>
   <body class="<?= $page_name ?>">
-    <?php include_once (ROOT_PATH . '/include/header.php'); // the navbar ?>
+    <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container">
-      <h2>Available Books</h2>
-      <p class="lead">Browse the library collection below.</p>
+    <main class="container pb-5">
+      <h2>Manage Books</h2>
+      <p class="lead">Search the library collection. <?= count($books) ?> book(s) shown.</p>
       <hr class="mb-4">
 
-      <?php /* Search form: method="get" puts the search in the URL (books.php?search=...)
-               and reloads this same page. value= keeps what the user typed in the box. */ ?>
+      <?php /* Search form: method="get" reloads this page with ?search=... in the URL.
+               value= keeps what the admin typed in the box. */ ?>
       <form method="get" class="d-flex gap-2 mb-4">
-        <input type="text" name="search" class="form-control" placeholder="Search by title or ISBN"
+        <input type="text" name="search" class="form-control" placeholder="Search by title, ISBN or author"
                value="<?= htmlspecialchars($search) ?>">
         <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
         <?php if ($search !== ''): // only show "Clear" while searching ?>
@@ -81,35 +78,27 @@ $db_connection->close();
         <?php endif; ?>
       </form>
 
-      <table class="table table-striped table-hover">
+      <table class="table table-striped table-hover align-middle">
         <thead>
-          <tr>
-            <th>Title</th><th>Author(s)</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Action</th>
-          </tr>
+          <tr><th>Title</th><th>Author(s)</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Copies</th></tr>
         </thead>
         <tbody>
-          <?php
-          /* foreach: loop through $books, one $book (row) at a time.
-             htmlspecialchars(): turns < > & " into safe text so the browser
-             displays them instead of running them as code (prevents XSS attacks).
-             ?? : use the right side if the left side is empty, e.g. 'Unknown'. */
-          ?>
           <?php foreach ($books as $book): ?>
+            <?php $available = $book['total_copies'] - $book['on_loan']; // copies still on the shelf ?>
             <tr>
               <td><?= htmlspecialchars($book['title']) ?></td>
               <td><?= htmlspecialchars($book['authors'] ?? 'Unknown') ?></td>
               <td><?= htmlspecialchars($book['isbn']) ?></td>
               <td><?= htmlspecialchars($book['publisher_name'] ?? 'N/A') ?></td>
               <td><?= htmlspecialchars($book['publication_year']) ?></td>
-              <td>
-                <?php /* (int) forces book_id to be a whole number, so nothing harmful can sneak into the link */ ?>
-                <a href="book.php?book_id=<?= (int) $book['book_id'] ?>" class="btn btn-sm btn-primary">Reserve / View</a>
+              <?php /* e.g. "1 of 2 available"; red when every copy is borrowed */ ?>
+              <td class="<?= $available > 0 ? '' : 'text-danger' ?>">
+                <?= $available ?> of <?= $book['total_copies'] ?> available
               </td>
             </tr>
           <?php endforeach; ?>
 
-          <?php /* empty() is true when $books has no rows, so show a message instead of a blank table */ ?>
-          <?php if (empty($books)): ?>
+          <?php if (empty($books)): // no rows: either nothing matches the search, or no books yet ?>
             <tr><td colspan="6" class="text-center">
               <?= $search !== '' ? 'No books match "' . htmlspecialchars($search) . '".' : 'No books found in the library database.' ?>
             </td></tr>

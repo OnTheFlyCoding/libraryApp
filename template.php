@@ -16,7 +16,7 @@
   </head>
   <body>
     <?php include_once "./include/header.php"; ?>
-    <main role="main" class="container">
+    <main id="main" role="main" class="container">
       <!-- Primary Content Goes Here -->
     </main>
     <!-- One footer file for all pages -->

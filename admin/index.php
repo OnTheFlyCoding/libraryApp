@@ -32,7 +32,7 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
   <body class="<?php echo $page_name; ?>">
 
   <?php include_once (ROOT_PATH . '/include/header.php'); ?>
-    <main role="main" class="container">
+    <main id="main" role="main" class="container">
 
     <div class="container text-center">
   <div class="row align-items-center">
@@ -46,6 +46,8 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
       <hr class="mb-4">
       <section class="mb-4">
       <h2>All System Users</h2>
+      <?php /* table-responsive: on small screens only the table scrolls sideways, not the whole page */ ?>
+      <div class="table-responsive">
       <table class="table">
   <thead>
     <tr>
@@ -95,6 +97,7 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
 
   </tbody>
 </table>
+</div>
 </section>
       
     </div>

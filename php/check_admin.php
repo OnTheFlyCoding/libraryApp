@@ -19,6 +19,7 @@ if($user_role == 1){
   $_SESSION['message'] = "Access Denied";
   // Redirect to logout
   header("location: " . SRC_PATH . "/logout.php");
+  exit(); // stop here, or the rest of the page (including add/delete code) would still run
 }
 
 ?>

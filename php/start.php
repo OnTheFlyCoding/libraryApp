@@ -518,6 +518,22 @@ $db_connection -> query(
         (12, 100012,7),
         (13, 100013,8),
         (14, 100014,8);");
+
+//*****************************/
+// INSERT BOOK-CATEGORIES (a book can be in more than one category)
+//*****************************/
+$db_connection -> query(
+        "INSERT INTO BookCategories (category_id, book_id) VALUES
+        (4,1),  -- Romance: The Great Gatsby
+        (4,2),  -- Romance: Tender Is The Night
+        (6,3),  -- Historical Fiction: To Kill a Mockingbird
+        (1,4),  -- Sci-Fy: 1984
+        (2,5),  -- Fantasy: The Hobbit
+        (9,5),  -- Children's Literature: The Hobbit (two categories)
+        (6,6),  -- Historical Fiction: The Great Alone
+        (2,7),  -- Fantasy: Animal Farm
+        (2,8);");  // Fantasy: Good Omens
+                   // The Old Man and the Sea has no category: none of the 10 fit it
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");
 /* Return to homepage after 5 seconds */

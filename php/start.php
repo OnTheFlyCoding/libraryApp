@@ -442,7 +442,8 @@ $db_connection -> query(
 (4, 'George', 'Orwell'),
 (5, 'Terry', 'Pratchett'),
 (6, 'Neil', 'Gaiman'),
-(7, 'Ernest', 'Hemingway');");
+(7, 'Ernest', 'Hemingway'),
+(8, 'J.R.R.', 'Tolkien');");
 
 $insert_author->close();
 //*****************************/
@@ -480,26 +481,27 @@ $db_connection -> query(
         (2,'Tender Is The Night', '978-0-7432-0002-2',1,1934, 1),
         (3,'To Kill a Mockingbird', '978-0-0609-0003-3', 1, 1960, 3),
         (4,'1984', '978-0-7432-0004-4', 1, 1949, 2),
-        (5,'The Hobbit', '978-0-0609-0005-5', 1, 1937, 4),
+        (5,'The Hobbit', '978-0-0609-0005-5', 1, 1937, 5),
         (6,'The Great Alone', '978-0-7432-0006-6',1,2018, 4),
         (7,'Animal Farm','978-0-0609-0007-7',1,1945,2),
         (8,'Good Omens','978-0-0609-0008-8',1,1990,3),
-        (9,'The Good Man and the sea','978-0-0609-0009-9',1,1952,1);");
+        (9,'The Old Man and the Sea','978-0-0609-0009-9',1,1952,1);");
 
 //*****************************/
 // INSERT BOOK-AUTHORS//
 //*****************************/
 $db_connection -> query(
         "INSERT INTO BookAuthors (author_id, book_id) VALUES
-        (1,1),
-        (1,2),
-        (3,3),
-        (2,4),
-        (4,5),
-        (4,6),
-        (2,7),
-        (3,8),
-        (1,9);");
+        (1,1),  -- Fitzgerald: The Great Gatsby
+        (1,2),  -- Fitzgerald: Tender Is The Night
+        (3,3),  -- Lee: To Kill a Mockingbird
+        (4,4),  -- Orwell: 1984
+        (8,5),  -- Tolkien: The Hobbit
+        (2,6),  -- Hannah: The Great Alone
+        (4,7),  -- Orwell: Animal Farm
+        (5,8),  -- Pratchett: Good Omens
+        (6,8),  -- Gaiman: Good Omens (two authors)
+        (7,9);");  // Hemingway: The Old Man and the Sea
 $db_connection -> query(
         "INSERT INTO BookCopies (copy_id, barcode, book_id) VALUES
         (1, 100001,1),

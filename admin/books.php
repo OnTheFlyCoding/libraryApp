@@ -233,7 +233,8 @@ $add_failed = ($action === 'add' && $error !== '');
 
       <div class="collapse <?= $add_failed ? 'show' : '' ?>" id="addBook">
         <div class="card card-body mb-4">
-          <?php /* value="<?= ... ?>" refills the boxes after a failed add (htmlspecialchars keeps it safe) */ ?>
+          <?php /* After a failed add, value="<?= ... ?>" refills Title, ISBN and Year so they don't need retyping
+                   (htmlspecialchars keeps it safe). The dropdowns, Volume and Copies go back to their defaults. */ ?>
           <form method="post" class="row g-3">
             <input type="hidden" name="action" value="add">
             <div class="col-md-6">

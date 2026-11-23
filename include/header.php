@@ -61,7 +61,7 @@ function dropdown_item($url, $text) {
             nav_link($dir . 'loans.php', 'View All Loans');
             nav_link($dir . 'users.php', 'Manage Users');
 
-            /* "Catalog" dropdown groups the smaller pages so the navbar stays on one line.
+            /* "Catalog" dropdown groups the smaller pages, so the navbar has fewer links to fit.
                data-bs-toggle="dropdown" makes Bootstrap open the menu when it's clicked.
                The Catalog button itself is highlighted when we're on one of its pages. */
             $catalog_pages = [$dir . 'authors.php', $dir . 'publishers.php', $dir . 'categories.php'];

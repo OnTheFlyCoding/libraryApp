@@ -534,6 +534,121 @@ $db_connection -> query(
         (2,7),  -- Fantasy: Animal Farm
         (2,8);");  // Fantasy: Good Omens
                    // The Old Man and the Sea has no category: none of the 10 fit it
+
+//*****************************/
+// SAMPLE BOOKS 10-50 (test data, so the library has 50 books and pagination shows)
+// Same tables and order as above: authors, books, book-authors, copies, categories.
+// ISBNs are made up and numbered to match the book_id.
+//*****************************/
+$db_connection -> query(
+        "INSERT INTO Authors (author_id, first_name, last_name) VALUES
+        (9,'Aldous','Huxley'), (10,'Ray','Bradbury'), (11,'John','Steinbeck'),
+        (12,'J.D.','Salinger'), (13,'William','Golding'), (14,'Toni','Morrison'),
+        (15,'Margaret','Atwood'), (16,'Agatha','Christie'), (17,'Frank','Herbert'),
+        (18,'Isaac','Asimov'), (19,'Cormac','McCarthy'), (20,'Kurt','Vonnegut'),
+        (21,'E.B.','White'), (22,'Delia','Owens'), (23,'Suzanne','Collins');");
+
+$db_connection -> query(
+        "INSERT INTO Books (book_id, title, isbn, book_volume, publication_year, pub_id) VALUES
+        (10,'The Sun Also Rises','978-0-0000-0010-0',1,1926,1),
+        (11,'A Farewell to Arms','978-0-0000-0011-0',1,1929,1),
+        (12,'For Whom the Bell Tolls','978-0-0000-0012-0',1,1940,1),
+        (13,'This Side of Paradise','978-0-0000-0013-0',1,1920,1),
+        (14,'Go Set a Watchman','978-0-0000-0014-0',1,2015,3),
+        (15,'The Nightingale','978-0-0000-0015-0',1,2015,4),
+        (16,'Firefly Lane','978-0-0000-0016-0',1,2008,4),
+        (17,'The Four Winds','978-0-0000-0017-0',1,2021,4),
+        (18,'Homage to Catalonia','978-0-0000-0018-0',1,1938,2),
+        (19,'Down and Out in Paris and London','978-0-0000-0019-0',1,1933,2),
+        (20,'The Colour of Magic','978-0-0000-0020-0',1,1983,3),
+        (21,'Mort','978-0-0000-0021-0',1,1987,3),
+        (22,'Guards! Guards!','978-0-0000-0022-0',1,1989,3),
+        (23,'American Gods','978-0-0000-0023-0',1,2001,3),
+        (24,'Coraline','978-0-0000-0024-0',1,2002,3),
+        (25,'Neverwhere','978-0-0000-0025-0',1,1996,3),
+        (26,'The Fellowship of the Ring','978-0-0000-0026-0',1,1954,5),
+        (27,'The Two Towers','978-0-0000-0027-0',2,1954,5),
+        (28,'The Return of the King','978-0-0000-0028-0',3,1955,5),
+        (29,'Brave New World','978-0-0000-0029-0',1,1932,3),
+        (30,'Fahrenheit 451','978-0-0000-0030-0',1,1953,2),
+        (31,'The Martian Chronicles','978-0-0000-0031-0',1,1950,2),
+        (32,'Of Mice and Men','978-0-0000-0032-0',1,1937,2),
+        (33,'The Grapes of Wrath','978-0-0000-0033-0',1,1939,2),
+        (34,'East of Eden','978-0-0000-0034-0',1,1952,2),
+        (35,'The Catcher in the Rye','978-0-0000-0035-0',1,1951,1),
+        (36,'Lord of the Flies','978-0-0000-0036-0',1,1954,2),
+        (37,'Beloved','978-0-0000-0037-0',1,1987,2),
+        (38,'The Handmaid''s Tale','978-0-0000-0038-0',1,1985,2),
+        (39,'Murder on the Orient Express','978-0-0000-0039-0',1,1934,3),
+        (40,'And Then There Were None','978-0-0000-0040-0',1,1939,3),
+        (41,'Dune','978-0-0000-0041-0',1,1965,2),
+        (42,'Foundation','978-0-0000-0042-0',1,1951,2),
+        (43,'I, Robot','978-0-0000-0043-0',1,1950,2),
+        (44,'The Road','978-0-0000-0044-0',1,2006,2),
+        (45,'Slaughterhouse-Five','978-0-0000-0045-0',1,1969,2),
+        (46,'Charlotte''s Web','978-0-0000-0046-0',1,1952,3),
+        (47,'Where the Crawdads Sing','978-0-0000-0047-0',1,2018,2),
+        (48,'The Hunger Games','978-0-0000-0048-0',1,2008,4),
+        (49,'Catching Fire','978-0-0000-0049-0',2,2009,4),
+        (50,'Mockingjay','978-0-0000-0050-0',3,2010,4);");
+
+/* (author_id, book_id) pairs, grouped by author */
+$db_connection -> query(
+        "INSERT INTO BookAuthors (author_id, book_id) VALUES
+        (7,10), (7,11), (7,12),            -- Hemingway
+        (1,13),                            -- Fitzgerald
+        (3,14),                            -- Lee
+        (2,15), (2,16), (2,17),            -- Hannah
+        (4,18), (4,19),                    -- Orwell
+        (5,20), (5,21), (5,22),            -- Pratchett
+        (6,23), (6,24), (6,25),            -- Gaiman
+        (8,26), (8,27), (8,28),            -- Tolkien
+        (9,29),                            -- Huxley
+        (10,30), (10,31),                  -- Bradbury
+        (11,32), (11,33), (11,34),         -- Steinbeck
+        (12,35), (13,36), (14,37), (15,38),-- Salinger, Golding, Morrison, Atwood
+        (16,39), (16,40),                  -- Christie
+        (17,41),                           -- Herbert
+        (18,42), (18,43),                  -- Asimov
+        (19,44), (20,45), (21,46), (22,47),-- McCarthy, Vonnegut, White, Owens
+        (23,48), (23,49), (23,50);");      // Collins
+
+/* Most books get 2 copies; a few get 1, so 'No copies available' is easy to test.
+   (copy_id, barcode, book_id). Barcodes continue from 100014. */
+$db_connection -> query(
+        "INSERT INTO BookCopies (copy_id, barcode, book_id) VALUES
+        (15,100015,10), (16,100016,10), (17,100017,11), (18,100018,11), (19,100019,12),
+        (20,100020,13), (21,100021,13), (22,100022,14), (23,100023,15), (24,100024,15),
+        (25,100025,16), (26,100026,16), (27,100027,17), (28,100028,17), (29,100029,18),
+        (30,100030,19), (31,100031,19), (32,100032,20), (33,100033,20), (34,100034,21),
+        (35,100035,21), (36,100036,22), (37,100037,23), (38,100038,23), (39,100039,24),
+        (40,100040,24), (41,100041,25), (42,100042,26), (43,100043,26), (44,100044,27),
+        (45,100045,27), (46,100046,28), (47,100047,28), (48,100048,29), (49,100049,29),
+        (50,100050,30), (51,100051,30), (52,100052,31), (53,100053,32), (54,100054,32),
+        (55,100055,33), (56,100056,33), (57,100057,34), (58,100058,35), (59,100059,35),
+        (60,100060,36), (61,100061,36), (62,100062,37), (63,100063,38), (64,100064,38),
+        (65,100065,39), (66,100066,39), (67,100067,40), (68,100068,40), (69,100069,41),
+        (70,100070,41), (71,100071,42), (72,100072,42), (73,100073,43), (74,100074,44),
+        (75,100075,44), (76,100076,45), (77,100077,46), (78,100078,46), (79,100079,47),
+        (80,100080,47), (81,100081,48), (82,100082,48), (83,100083,49), (84,100084,49),
+        (85,100085,50), (86,100086,50);");
+
+/* (category_id, book_id). 1 Sci-Fy, 2 Fantasy, 3 Mystery, 4 Romance, 5 Thriller,
+   6 Historical Fiction, 7 Non-Fiction, 8 Math, 9 Children's Literature, 10 Horror.
+   The Catcher in the Rye (35) has none, because none of the 10 fit it. */
+$db_connection -> query(
+        "INSERT INTO BookCategories (category_id, book_id) VALUES
+        (4,10), (4,11), (6,11), (6,12), (4,13), (6,14), (6,15), (4,16), (6,17),
+        (7,18), (7,19),                                  -- Orwell's non-fiction
+        (2,20), (2,21), (2,22), (3,22), (2,23),
+        (2,24), (9,24), (10,24),                         -- Coraline: 3 categories
+        (2,25), (2,26), (2,27), (2,28),                  -- incl. The Lord of the Rings
+        (1,29), (1,30), (1,31), (6,32), (6,33), (6,34),
+        (5,36), (6,37), (10,37), (1,38), (3,39), (3,40), (5,40),
+        (1,41), (1,42), (1,43), (1,44), (1,45), (6,45), (9,46),
+        (3,47), (4,47),
+        (1,48), (5,48), (1,49), (5,49), (1,50), (5,50);");  // The Hunger Games trilogy
+
 /* Status Display */
 echo nl2br("The database tables were successfully populated.\r\n");
 /* Return to homepage after 5 seconds */

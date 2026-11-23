@@ -154,7 +154,7 @@ function val($value) {
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
+    <main id="main" class="container pb-5">
       <h1 class="h2">My Account</h1>
       <p class="lead">Update your info, username or password.</p>
       <hr class="mb-4">

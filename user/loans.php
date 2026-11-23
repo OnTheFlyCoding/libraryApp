@@ -79,7 +79,7 @@ $today = date('Y-m-d'); // used to spot overdue loans
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
+    <main id="main" class="container pb-5">
       <h1 class="h2">Active Loans</h1>
       <p class="lead">
         Books you have borrowed. Loans last 14 days.

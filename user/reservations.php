@@ -78,7 +78,7 @@ foreach ($reservations as $r) {
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
+    <main id="main" class="container pb-5">
       <h1 class="h2">My Reservations</h1>
       <p class="lead">
         Books you have reserved. Reservations last 7 days.

@@ -90,7 +90,7 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
+    <main id="main" class="container pb-5">
       <h1 class="h2">All Loans</h1>
       <p class="lead">
         Every book borrowed by every user.
@@ -113,7 +113,7 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
             <option value="<?= $s ?>" <?= $filter === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
           <?php endforeach; ?>
         </select>
-        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search" aria-hidden="true"></i> Search</button>
         <?php if ($search !== '' || $filter !== ''): // only show "Clear" while searching/filtering ?>
           <a href="loans.php" class="btn btn-outline-secondary">Clear</a>
         <?php endif; ?>

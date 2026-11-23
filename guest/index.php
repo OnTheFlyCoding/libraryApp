@@ -25,7 +25,7 @@
   <body class="<?php echo $page_name; ?>">
 
   <?php include_once (ROOT_PATH . '/include/header.php'); ?>
-    <main role="main" class="container">
+    <main id="main" role="main" class="container">
 
     <div class="container text-center">
   <div class="row align-items-center">

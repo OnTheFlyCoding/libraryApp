@@ -159,8 +159,8 @@ $db_connection->close();
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
-      <a href="books.php" class="btn btn-link px-0 mb-3"><i class="bi bi-arrow-left"></i> Back to books</a>
+    <main id="main" class="container pb-5">
+      <a href="books.php" class="btn btn-link px-0 mb-3"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to books</a>
 
       <?php if (!$book): // no book with that id ?>
         <div class="alert alert-warning">Book not found.</div>
@@ -186,14 +186,14 @@ $db_connection->close();
             <?php /* date('M j, Y', ...) formats 2026-11-18 as "Nov 18, 2026" */ ?>
             <?php if ($has_loan): // already borrowed: no buttons needed ?>
               <p class="text-success mb-0">
-                <i class="bi bi-check-circle"></i>
+                <i class="bi bi-check-circle" aria-hidden="true"></i>
                 You have this book borrowed. Due back <?= date('M j, Y', strtotime($due_date)) ?>.
               </p>
 
             <?php elseif ($_SESSION['user_role'] == 2): // only regular users get the buttons ?>
               <?php if ($has_reservation): ?>
                 <p class="text-success">
-                  <i class="bi bi-check-circle"></i>
+                  <i class="bi bi-check-circle" aria-hidden="true"></i>
                   You have this book reserved until <?= date('M j, Y', strtotime($expire_date)) ?>.
                 </p>
               <?php endif; ?>
@@ -201,10 +201,10 @@ $db_connection->close();
               <?php /* One form, two buttons. name="action" + value tells PHP which one was clicked. */ ?>
               <form method="post" class="d-flex gap-2">
                 <?php if ($has_copy && $loan_count < $max_loans): ?>
-                  <button type="submit" name="action" value="borrow" class="btn btn-success"><i class="bi bi-box-arrow-right"></i> Borrow this book</button>
+                  <button type="submit" name="action" value="borrow" class="btn btn-success"><i class="bi bi-box-arrow-right" aria-hidden="true"></i> Borrow this book</button>
                 <?php endif; ?>
                 <?php if (!$has_reservation && $reservation_count < $max_reservations): ?>
-                  <button type="submit" name="action" value="reserve" class="btn btn-primary"><i class="bi bi-bookmark-plus"></i> Reserve this book</button>
+                  <button type="submit" name="action" value="reserve" class="btn btn-primary"><i class="bi bi-bookmark-plus" aria-hidden="true"></i> Reserve this book</button>
                 <?php endif; ?>
               </form>
 

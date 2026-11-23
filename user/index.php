@@ -53,7 +53,7 @@ ini_set('display_errors', 0); // set to 1 to display errors, 0 to hide them
   <body class="<?php echo $page_name; ?>">
 
   <?php include_once (ROOT_PATH . '/include/header.php'); // Include header.php ?>
-    <main role="main" class="container">
+    <main id="main" role="main" class="container">
 
     <div class="container text-center">
   <div class="row align-items-center">

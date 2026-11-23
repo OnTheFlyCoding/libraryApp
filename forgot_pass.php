@@ -19,7 +19,7 @@
   </head>
   <body>
     <?php include_once "./include/header.php"; ?>
-    <main role="main" class="container">
+    <main id="main" role="main" class="container">
       <div class="row justify-content-sm-center">
         <div class="col-sm-4">
           <h1>Account Recovery</h1>

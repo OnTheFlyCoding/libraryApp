@@ -22,20 +22,23 @@ function page_link($n) {
 ?>
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
-    <?php /* "disabled" greys out Previous on page 1 (nowhere to go back to) */ ?>
+    <?php /* "disabled" greys out Previous on page 1 (nowhere to go back to).
+             tabindex="-1" + aria-disabled also skip it for keyboard and screen reader users. */ ?>
     <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-      <a class="page-link" href="<?= htmlspecialchars(page_link($page - 1)) ?>">&laquo; Previous</a>
+      <a class="page-link" href="<?= htmlspecialchars(page_link($page - 1)) ?>"
+         <?= $page <= 1 ? 'tabindex="-1" aria-disabled="true"' : '' ?>>&laquo; Previous</a>
     </li>
 
-    <?php for ($n = 1; $n <= $total_pages; $n++): // one numbered button per page; "active" highlights the current one ?>
+    <?php for ($n = 1; $n <= $total_pages; $n++): // one numbered button per page; "active" + aria-current mark the current one ?>
       <li class="page-item <?= $n === $page ? 'active' : '' ?>">
-        <a class="page-link" href="<?= htmlspecialchars(page_link($n)) ?>"><?= $n ?></a>
+        <a class="page-link" href="<?= htmlspecialchars(page_link($n)) ?>" <?= $n === $page ? 'aria-current="page"' : '' ?>><?= $n ?></a>
       </li>
     <?php endfor; ?>
 
-    <?php /* "disabled" greys out Next on the last page */ ?>
+    <?php /* Same as Previous: greyed out and skipped on the last page */ ?>
     <li class="page-item <?= $page >= $total_pages ? 'disabled' : '' ?>">
-      <a class="page-link" href="<?= htmlspecialchars(page_link($page + 1)) ?>">Next &raquo;</a>
+      <a class="page-link" href="<?= htmlspecialchars(page_link($page + 1)) ?>"
+         <?= $page >= $total_pages ? 'tabindex="-1" aria-disabled="true"' : '' ?>>Next &raquo;</a>
     </li>
   </ul>
 </nav>

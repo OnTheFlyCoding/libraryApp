@@ -71,7 +71,7 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
   <body class="<?= $page_name ?>">
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
-    <main class="container pb-5">
+    <main id="main" class="container pb-5">
       <h1 class="h2">Manage Books</h1>
       <p class="lead">Search the library collection. <?= count($books) ?> book(s) found.</p>
       <hr class="mb-4">
@@ -83,7 +83,7 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
         <label for="search" class="visually-hidden">Search books</label>
         <input type="text" id="search" name="search" class="form-control" placeholder="Search by title, ISBN or author"
                value="<?= htmlspecialchars($search) ?>">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-search" aria-hidden="true"></i> Search</button>
         <?php if ($search !== ''): // only show "Clear" while searching ?>
           <a href="books.php" class="btn btn-outline-secondary">Clear</a>
         <?php endif; ?>

@@ -18,12 +18,22 @@ if (!isset($_SESSION)) {
 /* Brand link: send each role to its own dashboard, or to the login page if not logged in */
 $dashboards = [1 => '/admin/index.php', 2 => '/user/index.php', 3 => '/guest/index.php'];
 $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.php');
+
+/* Prints one navbar link. If it points to the page we're on ($_SERVER['SCRIPT_NAME']),
+   it gets "active" (highlighted) and aria-current="page" (screen readers say "current page"). */
+function nav_link($url, $text) {
+    $current = ($url === $_SERVER['SCRIPT_NAME']);
+    echo '<li class="nav-item"><a class="nav-link' . ($current ? ' active" aria-current="page' : '') . '" href="' . $url . '">' . $text . '</a></li>';
+}
 ?>
+<?php /* Skip link: hidden until a keyboard user presses Tab, then it lets them jump past the navbar.
+         href="#main" goes to the element with id="main" (the <main> tag on each page). */ ?>
+<a class="visually-hidden-focusable" href="#main">Skip to main content</a>
 <header class="mb-5">
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="<?php echo $brand_url; ?>">
-    <i class="bi bi-book"></i> Library Prototype</a>
+    <i class="bi bi-book" aria-hidden="true"></i> Library Prototype</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -32,41 +42,38 @@ $brand_url  = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.ph
         <?php
           /* Show Home link only when user is NOT logged in */
           if (!isset($_SESSION['user_name'])) {
-            echo '<li class="nav-item">';
-            echo '<a class="nav-link active" aria-current="page" href="' . BASE_URL . '/index.php">Home</a>';
-            echo '</li>';
+            nav_link(BASE_URL . '/index.php', 'Home');
           }
         ?>
-        
+
         <?php
           /* Admin Navigation Links */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) { 
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 1) {
             $dir = BASE_URL . '/admin/'; // full path to the admin folder, so links work from any page
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Admin Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">Manage Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">View All Loans</a></li>';
+            nav_link($dir . 'index.php', 'Admin Dashboard');
+            nav_link($dir . 'books.php', 'Manage Books');
+            nav_link($dir . 'loans.php', 'View All Loans');
           }
         ?>
 
         <?php
           /* Front End User Navigation Links */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) { 
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 2) {
             $dir = BASE_URL . '/user/'; // full path to the user folder, so links work from any page
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'books.php">View Available Books</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'loans.php">Active Loans</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'reservations.php">Reservations</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . $dir . 'account.php">My Account</a></li>';
-            /* Use the above for account editing for user if added. */
+            nav_link($dir . 'index.php', 'Dashboard');
+            nav_link($dir . 'books.php', 'View Available Books');
+            nav_link($dir . 'loans.php', 'Active Loans');
+            nav_link($dir . 'reservations.php', 'Reservations');
+            nav_link($dir . 'account.php', 'My Account');
           }
         ?>
 
         <?php
           /* Guest Navigation Links */
-          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) { 
+          if (isset($_SESSION['user_name']) && $_SESSION['user_role'] == 3) {
             /* Guests share the user books page (book.php hides Reserve/Borrow for them) */
-            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/guest/index.php">Dashboard</a></li>';
-            echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/user/books.php">View Available Books</a></li>';
+            nav_link(BASE_URL . '/guest/index.php', 'Dashboard');
+            nav_link(BASE_URL . '/user/books.php', 'View Available Books');
           }
         ?>
       </ul>

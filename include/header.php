@@ -64,13 +64,14 @@ function dropdown_item($url, $text) {
             /* "Catalog" dropdown groups the smaller pages so the navbar stays on one line.
                data-bs-toggle="dropdown" makes Bootstrap open the menu when it's clicked.
                The Catalog button itself is highlighted when we're on one of its pages. */
-            $catalog_pages = [$dir . 'authors.php', $dir . 'publishers.php'];
+            $catalog_pages = [$dir . 'authors.php', $dir . 'publishers.php', $dir . 'categories.php'];
             $in_catalog    = in_array($_SERVER['SCRIPT_NAME'], $catalog_pages);
             echo '<li class="nav-item dropdown">';
             echo '<a class="nav-link dropdown-toggle' . ($in_catalog ? ' active' : '') . '" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Catalog</a>';
             echo '<ul class="dropdown-menu">';
             dropdown_item($dir . 'authors.php', 'Authors');
             dropdown_item($dir . 'publishers.php', 'Publishers');
+            dropdown_item($dir . 'categories.php', 'Categories');
             echo '</ul>';
             echo '</li>';
           }

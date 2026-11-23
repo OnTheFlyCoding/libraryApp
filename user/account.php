@@ -166,7 +166,8 @@ function val($value) {
         <div class="alert alert-danger"><?= $error ?></div>
       <?php endif; ?>
 
-      <?php /* Form 1: account info. The hidden "action" tells section 1 (top of file) to handle it. */ ?>
+      <?php /* Form 1: account info. The hidden "action" tells section 1 (top of file) to handle it.
+               On all 3 forms, each label's for="..." matches its input's id, so screen readers read the label. */ ?>
       <div class="card mb-4">
         <div class="card-header"><h2 class="h4 mb-0">Account Info</h2></div>
         <div class="card-body">

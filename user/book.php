@@ -14,7 +14,7 @@ $page_name = "reserve";
 /* Which book? (int) turns the URL value into a whole number (0 if missing/invalid). */
 $book_id = (int) ($_GET['book_id'] ?? 0);
 $user_id = $_SESSION['user_id'];
-$message = ''; // success message shown after reserving
+$message = ''; // success message shown after reserving or borrowing
 
 /* ------------------------------------------------------------------
    1. GET THE BOOK (same joins as books.php, but for ONE book)
@@ -166,7 +166,7 @@ $db_connection->close();
         <div class="alert alert-warning">Book not found.</div>
 
       <?php else: ?>
-        <?php if ($message): // green box after reserving ?>
+        <?php if ($message): // green box after reserving or borrowing ?>
           <div class="alert alert-success"><?= $message ?></div>
         <?php endif; ?>
 

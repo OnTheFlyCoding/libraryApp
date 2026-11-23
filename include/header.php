@@ -55,6 +55,7 @@ function nav_link($url, $text) {
             nav_link($dir . 'loans.php', 'View All Loans');
             nav_link($dir . 'users.php', 'Manage Users');
             nav_link($dir . 'authors.php', 'Authors');
+            nav_link($dir . 'publishers.php', 'Publishers');
           }
         ?>
 

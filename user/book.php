@@ -17,11 +17,14 @@ $user_id = $_SESSION['user_id'];
 $message = ''; // success message shown after reserving or borrowing
 
 /* ------------------------------------------------------------------
-   1. GET THE BOOK (same joins as books.php, but for ONE book)
+   1. GET THE BOOK (same query as books.php, including categories, but for ONE book)
    ------------------------------------------------------------------ */
 $stmt = $db_connection->prepare("
     SELECT b.book_id, b.title, b.isbn, b.book_volume, b.publication_year, p.publisher_name,
-           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors
+           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors,
+           (SELECT GROUP_CONCAT(cat.category_name SEPARATOR ', ') FROM BookCategories bcat
+              INNER JOIN Category cat ON bcat.category_id = cat.category_id
+              WHERE bcat.book_id = b.book_id) AS categories
     FROM Books b
     LEFT JOIN Publishers  p  ON b.pub_id     = p.pub_id
     LEFT JOIN BookAuthors ba ON b.book_id    = ba.book_id
@@ -177,6 +180,7 @@ $db_connection->close();
             <?php /* dl/dt/dd = a list of labels (dt) and values (dd); row/col-sm make it 2 columns */ ?>
             <dl class="row mb-4">
               <dt class="col-sm-3">Author(s)</dt> <dd class="col-sm-9"><?= htmlspecialchars($book['authors'] ?? 'Unknown') ?></dd>
+              <dt class="col-sm-3">Category</dt>  <dd class="col-sm-9"><?= htmlspecialchars($book['categories'] ?? 'None') ?></dd>
               <dt class="col-sm-3">ISBN</dt>      <dd class="col-sm-9"><?= htmlspecialchars($book['isbn']) ?></dd>
               <dt class="col-sm-3">Publisher</dt> <dd class="col-sm-9"><?= htmlspecialchars($book['publisher_name'] ?? 'N/A') ?></dd>
               <dt class="col-sm-3">Year</dt>      <dd class="col-sm-9"><?= htmlspecialchars($book['publication_year']) ?></dd>

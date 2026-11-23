@@ -32,10 +32,15 @@ $like = "%" . $search . "%";
    - WHERE ... LIKE ? filters by title OR isbn. The ? marks are filled in below.
    - GROUP_CONCAT joins several authors into one string, e.g. "A, B".
    - GROUP BY b.book_id = one row per book (needed for GROUP_CONCAT).
+   - categories = a small query run for each book that gets its category name(s)
+     (a separate query instead of another JOIN, so the author rows don't get repeated).
    ------------------------------------------------------------------ */
 $query = "
     SELECT b.book_id, b.title, b.isbn, b.publication_year, p.publisher_name,
-           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors
+           GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors,
+           (SELECT GROUP_CONCAT(cat.category_name SEPARATOR ', ') FROM BookCategories bcat
+              INNER JOIN Category cat ON bcat.category_id = cat.category_id
+              WHERE bcat.book_id = b.book_id) AS categories
     FROM Books b
     LEFT JOIN Publishers  p  ON b.pub_id     = p.pub_id
     LEFT JOIN BookAuthors ba ON b.book_id    = ba.book_id
@@ -107,7 +112,7 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
         <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
           <tr>
-            <th scope="col">Title</th><th scope="col">Author(s)</th><th scope="col">ISBN</th><th scope="col">Publisher</th><th scope="col">Year</th><th scope="col">Action</th>
+            <th scope="col">Title</th><th scope="col">Author(s)</th><th scope="col">Category</th><th scope="col">ISBN</th><th scope="col">Publisher</th><th scope="col">Year</th><th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -121,6 +126,7 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
             <tr>
               <td><?= htmlspecialchars($book['title']) ?></td>
               <td><?= htmlspecialchars($book['authors'] ?? 'Unknown') ?></td>
+              <td><?= htmlspecialchars($book['categories'] ?? '-') // '-' when the book has no category ?></td>
               <td><?= htmlspecialchars($book['isbn']) ?></td>
               <td><?= htmlspecialchars($book['publisher_name'] ?? 'N/A') ?></td>
               <td><?= htmlspecialchars($book['publication_year']) ?></td>
@@ -133,7 +139,7 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
 
           <?php /* empty() is true when $books has no rows, so show a message instead of a blank table */ ?>
           <?php if (empty($books)): ?>
-            <tr><td colspan="6" class="text-center">
+            <tr><td colspan="7" class="text-center">
               <?= $search !== '' ? 'No books match "' . htmlspecialchars($search) . '".' : 'No books found in the library database.' ?>
             </td></tr>
           <?php endif; ?>

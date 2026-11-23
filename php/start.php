@@ -408,6 +408,7 @@ $username = "bobjones";
 $password_salted = crypt("SCSU2025", $salt); // same password as janesmith
 $insert_credentials->execute();
 
+//End query
 $insert_credentials->close();
 /*
  Insert Publisher Data

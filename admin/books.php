@@ -21,11 +21,12 @@ $action = $_POST['action'] ?? '';
 
 /* ------------------------------------------------------------------
    1. ADD A BOOK
-   A book needs rows in 3 tables:
-     Books       = the title, ISBN, year, publisher
-     BookAuthors = links the book to its author
-     BookCopies  = one row per physical copy (loans point to a copy)
-   A transaction makes the 3 inserts all-or-nothing: if one fails,
+   A book needs rows in 3 tables (4 if a category is picked):
+     Books          = the title, ISBN, year, publisher
+     BookAuthors    = links the book to its author
+     BookCopies     = one row per physical copy (loans point to a copy)
+     BookCategories = links the book to its category (optional)
+   A transaction makes the inserts all-or-nothing: if one fails,
    rollback() undoes the others, so we never end up with half a book.
    ------------------------------------------------------------------ */
 if ($action === 'add') {
@@ -35,6 +36,7 @@ if ($action === 'add') {
     $year      = (int) ($_POST['year'] ?? 0);
     $pub_id    = (int) ($_POST['pub_id'] ?? 0);
     $author_id = (int) ($_POST['author_id'] ?? 0);
+    $category_id = (int) ($_POST['category_id'] ?? 0); // 0 = "No category" was picked
     $copies    = (int) ($_POST['copies'] ?? 0);
 
     if ($title === '' || $isbn === '' || $pub_id === 0 || $author_id === 0) {
@@ -58,6 +60,13 @@ if ($action === 'add') {
             $insert->bind_param("ii", $author_id, $new_id);
             $insert->execute();
             $insert->close();
+
+            if ($category_id > 0) { // only link a category if one was picked
+                $insert = $db_connection->prepare("INSERT INTO BookCategories (category_id, book_id) VALUES (?, ?)");
+                $insert->bind_param("ii", $category_id, $new_id);
+                $insert->execute();
+                $insert->close();
+            }
 
             // Barcodes must be unique, so new copies continue from the highest barcode so far
             $result  = $db_connection->query("SELECT COALESCE(MAX(barcode), 100000) FROM BookCopies");
@@ -133,10 +142,11 @@ if ($action === 'delete') {
 }
 
 /* ------------------------------------------------------------------
-   3. GET PUBLISHERS AND AUTHORS for the Add form's dropdowns
+   3. GET PUBLISHERS, AUTHORS AND CATEGORIES for the Add form's dropdowns
    ------------------------------------------------------------------ */
 $publishers = $db_connection->query("SELECT pub_id, publisher_name FROM Publishers ORDER BY publisher_name")->fetch_all(MYSQLI_ASSOC);
 $authors    = $db_connection->query("SELECT author_id, first_name, last_name FROM Authors ORDER BY last_name, first_name")->fetch_all(MYSQLI_ASSOC);
+$categories = $db_connection->query("SELECT category_id, category_name FROM Category ORDER BY category_name")->fetch_all(MYSQLI_ASSOC);
 
 /* SEARCH: $_GET reads the search from the URL, e.g. books.php?search=orwell */
 $search = trim($_GET['search'] ?? '');
@@ -149,15 +159,20 @@ $like = "%" . $search . "%";
    4. GET BOOKS (matching the search) with publisher, author(s) and copy counts
    - Same joins as user/books.php: LEFT JOIN keeps books with no publisher/author.
    - GROUP_CONCAT joins several authors into one string, e.g. "A, B".
-   - The two (SELECT COUNT(*) ...) are small queries run for each book:
+   - The (SELECT ...) parts are small queries run for each book:
+       categories   = the book's category name(s), or NULL if it has none
        total_copies = how many copies the library owns
        on_loan      = how many of those copies are borrowed right now
+     (Done as small queries instead of more JOINs, so the author rows don't get repeated.)
    - HAVING (instead of WHERE) runs AFTER the authors are joined together,
      so the search can also match the author list, not just title and ISBN.
    ------------------------------------------------------------------ */
 $stmt = $db_connection->prepare("
     SELECT b.book_id, b.title, b.isbn, b.publication_year, p.publisher_name,
            GROUP_CONCAT(CONCAT(a.first_name, ' ', a.last_name) SEPARATOR ', ') AS authors,
+           (SELECT GROUP_CONCAT(cat.category_name SEPARATOR ', ') FROM BookCategories bcat
+              INNER JOIN Category cat ON bcat.category_id = cat.category_id
+              WHERE bcat.book_id = b.book_id) AS categories,
            (SELECT COUNT(*) FROM BookCopies bc WHERE bc.book_id = b.book_id) AS total_copies,
            (SELECT COUNT(*) FROM BookCopies bc
               INNER JOIN Loans l ON l.copy_id = bc.copy_id
@@ -250,15 +265,24 @@ $add_failed = ($action === 'add' && $error !== '');
               </select>
             </div>
             <div class="col-md-4">
+              <label for="category_id" class="form-label">Category</label>
+              <select id="category_id" name="category_id" class="form-select">
+                <option value="0">No category</option><?php // value 0 = don't link a category (optional) ?>
+                <?php foreach ($categories as $c): ?>
+                  <option value="<?= (int) $c['category_id'] ?>"><?= htmlspecialchars($c['category_name']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="col-md-3">
               <label for="year" class="form-label">Year</label>
               <input type="number" id="year" name="year" class="form-control" min="1901" max="2155" required
                      value="<?= $add_failed ? (int) ($_POST['year'] ?? 0) : '' ?>">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
               <label for="volume" class="form-label">Volume</label>
               <input type="text" id="volume" name="volume" class="form-control" maxlength="20" value="1">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label for="copies" class="form-label">Number of Copies</label>
               <input type="number" id="copies" name="copies" class="form-control" min="1" max="10" value="1" required>
             </div>
@@ -285,7 +309,7 @@ $add_failed = ($action === 'add' && $error !== '');
       <table class="table table-striped table-hover align-middle">
         <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
-          <tr><th scope="col">Title</th><th scope="col">Author(s)</th><th scope="col">ISBN</th><th scope="col">Publisher</th><th scope="col">Year</th><th scope="col">Copies</th><th scope="col">Action</th></tr>
+          <tr><th scope="col">Title</th><th scope="col">Author(s)</th><th scope="col">Category</th><th scope="col">ISBN</th><th scope="col">Publisher</th><th scope="col">Year</th><th scope="col">Copies</th><th scope="col">Action</th></tr>
         </thead>
         <tbody>
           <?php foreach ($books_on_page as $book): // only this page's books ?>
@@ -293,6 +317,7 @@ $add_failed = ($action === 'add' && $error !== '');
             <tr>
               <td><?= htmlspecialchars($book['title']) ?></td>
               <td><?= htmlspecialchars($book['authors'] ?? 'Unknown') ?></td>
+              <td><?= htmlspecialchars($book['categories'] ?? '-') // '-' when the book has no category ?></td>
               <td><?= htmlspecialchars($book['isbn']) ?></td>
               <td><?= htmlspecialchars($book['publisher_name'] ?? 'N/A') ?></td>
               <td><?= htmlspecialchars($book['publication_year']) ?></td>
@@ -317,7 +342,7 @@ $add_failed = ($action === 'add' && $error !== '');
           <?php endforeach; ?>
 
           <?php if (empty($books)): // no rows: either nothing matches the search, or no books yet ?>
-            <tr><td colspan="7" class="text-center">
+            <tr><td colspan="8" class="text-center">
               <?= $search !== '' ? 'No books match "' . htmlspecialchars($search) . '".' : 'No books found in the library database.' ?>
             </td></tr>
           <?php endif; ?>

@@ -79,7 +79,7 @@ foreach ($reservations as $r) {
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
     <main class="container pb-5">
-      <h2>My Reservations</h2>
+      <h1 class="h2">My Reservations</h1>
       <p class="lead">
         Books you have reserved. Reservations last 7 days.
         You have <strong><?= $active_count ?> of <?= $max_reservations ?></strong> reservations.
@@ -97,8 +97,9 @@ foreach ($reservations as $r) {
       <?php endif; ?>
 
       <table class="table table-striped table-hover align-middle">
+        <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
-          <tr><th>Book</th><th>Reserved On</th><th>Expires</th><th>Status</th><th>Action</th></tr>
+          <tr><th scope="col">Book</th><th scope="col">Reserved On</th><th scope="col">Expires</th><th scope="col">Status</th><th scope="col">Action</th></tr>
         </thead>
         <tbody>
           <?php /* Repeat the row below once per reservation; $r holds the current one (short for "reservation"). */ ?>

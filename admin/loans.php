@@ -91,7 +91,7 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
     <main class="container pb-5">
-      <h2>All Loans</h2>
+      <h1 class="h2">All Loans</h1>
       <p class="lead">
         Every book borrowed by every user.
         <span class="badge text-bg-success"><?= $counts['active'] ?> active</span>
@@ -102,9 +102,12 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
 
       <?php /* Search + status filter in one GET form, so both stay in the URL together */ ?>
       <form method="get" class="d-flex gap-2 mb-4">
-        <input type="text" name="search" class="form-control" placeholder="Search by book title, member name or username"
+        <?php /* visually-hidden = label is invisible on screen but still read by screen readers */ ?>
+        <label for="search" class="visually-hidden">Search loans</label>
+        <input type="text" id="search" name="search" class="form-control" placeholder="Search by book title, member name or username"
                value="<?= htmlspecialchars($search) ?>">
-        <select name="status" class="form-select w-auto">
+        <label for="status" class="visually-hidden">Loan status</label>
+        <select id="status" name="status" class="form-select w-auto">
           <option value="">All statuses</option>
           <?php foreach (['active', 'overdue', 'returned'] as $s): // 'selected' keeps the picked option after the page reloads ?>
             <option value="<?= $s ?>" <?= $filter === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
@@ -117,8 +120,9 @@ $badge = ['active' => 'success', 'overdue' => 'danger', 'returned' => 'secondary
       </form>
 
       <table class="table table-striped table-hover align-middle">
+        <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
-          <tr><th>Member</th><th>Book</th><th>Copy</th><th>Borrowed On</th><th>Due Date</th><th>Returned On</th><th>Status</th></tr>
+          <tr><th scope="col">Member</th><th scope="col">Book</th><th scope="col">Copy</th><th scope="col">Borrowed On</th><th scope="col">Due Date</th><th scope="col">Returned On</th><th scope="col">Status</th></tr>
         </thead>
         <tbody>
           <?php foreach ($loans_on_page as $loan): // only this page's loans ?>

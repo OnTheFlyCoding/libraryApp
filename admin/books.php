@@ -72,14 +72,16 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
     <main class="container pb-5">
-      <h2>Manage Books</h2>
+      <h1 class="h2">Manage Books</h1>
       <p class="lead">Search the library collection. <?= count($books) ?> book(s) found.</p>
       <hr class="mb-4">
 
       <?php /* Search form: method="get" reloads this page with ?search=... in the URL.
                value= keeps what the admin typed in the box. */ ?>
       <form method="get" class="d-flex gap-2 mb-4">
-        <input type="text" name="search" class="form-control" placeholder="Search by title, ISBN or author"
+        <?php /* visually-hidden = label is invisible on screen but still read by screen readers */ ?>
+        <label for="search" class="visually-hidden">Search books</label>
+        <input type="text" id="search" name="search" class="form-control" placeholder="Search by title, ISBN or author"
                value="<?= htmlspecialchars($search) ?>">
         <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
         <?php if ($search !== ''): // only show "Clear" while searching ?>
@@ -88,8 +90,9 @@ $books_on_page = array_slice($books, ($page - 1) * $per_page, $per_page);
       </form>
 
       <table class="table table-striped table-hover align-middle">
+        <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
-          <tr><th>Title</th><th>Author(s)</th><th>ISBN</th><th>Publisher</th><th>Year</th><th>Copies</th></tr>
+          <tr><th scope="col">Title</th><th scope="col">Author(s)</th><th scope="col">ISBN</th><th scope="col">Publisher</th><th scope="col">Year</th><th scope="col">Copies</th></tr>
         </thead>
         <tbody>
           <?php foreach ($books_on_page as $book): // only this page's books ?>

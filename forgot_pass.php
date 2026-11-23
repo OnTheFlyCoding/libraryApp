@@ -24,8 +24,9 @@
         <div class="col-sm-4">
           <h1>Account Recovery</h1>
           <form action="./db/recovery.php" method="post">
-            <div class="input-group mb-3">
-              <input type="email" class="form-control" id="email" aria-describedby="email" placeholder="Enter Email" name="email" required>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter Email" name="email" required>
             </div>
             <?php
               /* Error Message */

@@ -172,7 +172,7 @@ $db_connection->close();
 
         <?php /* Bootstrap "card" = a bordered box with a header and body */ ?>
         <div class="card">
-          <div class="card-header"><h3 class="mb-0"><?= htmlspecialchars($book['title']) ?></h3></div>
+          <div class="card-header"><h1 class="h3 mb-0"><?= htmlspecialchars($book['title']) ?></h1></div>
           <div class="card-body">
             <?php /* dl/dt/dd = a list of labels (dt) and values (dd); row/col-sm make it 2 columns */ ?>
             <dl class="row mb-4">

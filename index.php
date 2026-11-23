@@ -30,11 +30,15 @@
         <div class="col-sm-4">
           <h1>Login</h1>
           <form action="./php/authenticate.php" method="post">
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="username" placeholder="Enter username" name="username" required>
+            <?php /* label for="..." matches the input's id, so screen readers read the label
+                     and clicking the label puts the cursor in the box */ ?>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" placeholder="Enter username" name="username" required>
             </div>
-            <div class="input-group mb-3">
-              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password" name="password" required>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter Password" name="password" required>
             </div>
             
             <?php include_once (ROOT_PATH . '/php/error_rprt.php'); // shows login error/warning messages ?>

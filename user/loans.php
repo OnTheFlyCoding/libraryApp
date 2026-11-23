@@ -80,7 +80,7 @@ $today = date('Y-m-d'); // used to spot overdue loans
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
     <main class="container pb-5">
-      <h2>Active Loans</h2>
+      <h1 class="h2">Active Loans</h1>
       <p class="lead">
         Books you have borrowed. Loans last 14 days.
         You have <strong><?= $active_count ?> of <?= $max_loans ?></strong> books borrowed.
@@ -92,8 +92,9 @@ $today = date('Y-m-d'); // used to spot overdue loans
       <?php endif; ?>
 
       <table class="table table-striped table-hover align-middle">
+        <?php /* scope="col" tells screen readers each header names the column below it */ ?>
         <thead>
-          <tr><th>Book</th><th>Borrowed On</th><th>Due Date</th><th>Returned On</th><th>Status</th><th>Action</th></tr>
+          <tr><th scope="col">Book</th><th scope="col">Borrowed On</th><th scope="col">Due Date</th><th scope="col">Returned On</th><th scope="col">Status</th><th scope="col">Action</th></tr>
         </thead>
         <tbody>
           <?php /* Repeat the row below once per loan; $loan holds the current one. */ ?>

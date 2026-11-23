@@ -155,7 +155,7 @@ function val($value) {
     <?php include_once (ROOT_PATH . '/include/header.php'); ?>
 
     <main class="container pb-5">
-      <h2>My Account</h2>
+      <h1 class="h2">My Account</h1>
       <p class="lead">Update your info, username or password.</p>
       <hr class="mb-4">
 
@@ -168,45 +168,45 @@ function val($value) {
 
       <?php /* Form 1: account info. The hidden "action" tells section 1 (top of file) to handle it. */ ?>
       <div class="card mb-4">
-        <div class="card-header"><h4 class="mb-0">Account Info</h4></div>
+        <div class="card-header"><h2 class="h4 mb-0">Account Info</h2></div>
         <div class="card-body">
           <form method="post" class="row g-3">
             <input type="hidden" name="action" value="info">
             <div class="col-md-6">
-              <label class="form-label">First Name</label>
-              <input type="text" name="first_name" class="form-control" value="<?= val($user['first_name']) ?>" required>
+              <label for="first_name" class="form-label">First Name</label>
+              <input type="text" id="first_name" name="first_name" class="form-control" value="<?= val($user['first_name']) ?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Last Name</label>
-              <input type="text" name="last_name" class="form-control" value="<?= val($user['last_name']) ?>" required>
+              <label for="last_name" class="form-label">Last Name</label>
+              <input type="text" id="last_name" name="last_name" class="form-control" value="<?= val($user['last_name']) ?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" name="email" class="form-control" value="<?= val($user['email']) ?>" required>
+              <label for="email" class="form-label">Email</label>
+              <input type="email" id="email" name="email" class="form-control" value="<?= val($user['email']) ?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Phone</label>
-              <input type="text" name="phone" class="form-control" value="<?= val($user['phone']) ?>" required>
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text" id="phone" name="phone" class="form-control" value="<?= val($user['phone']) ?>" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Street</label>
-              <input type="text" name="street_1" class="form-control" value="<?= val($user['street_1']) ?>">
+              <label for="street_1" class="form-label">Street</label>
+              <input type="text" id="street_1" name="street_1" class="form-control" value="<?= val($user['street_1']) ?>">
             </div>
             <div class="col-md-6">
-              <label class="form-label">Apt / Suite</label>
-              <input type="text" name="street_2" class="form-control" value="<?= val($user['street_2']) ?>">
+              <label for="street_2" class="form-label">Apt / Suite</label>
+              <input type="text" id="street_2" name="street_2" class="form-control" value="<?= val($user['street_2']) ?>">
             </div>
             <div class="col-md-6">
-              <label class="form-label">City</label>
-              <input type="text" name="city" class="form-control" value="<?= val($user['city']) ?>">
+              <label for="city" class="form-label">City</label>
+              <input type="text" id="city" name="city" class="form-control" value="<?= val($user['city']) ?>">
             </div>
             <div class="col-md-3">
-              <label class="form-label">State</label>
-              <input type="text" name="state_code" class="form-control" maxlength="2" value="<?= val($user['state_code']) ?>">
+              <label for="state_code" class="form-label">State</label>
+              <input type="text" id="state_code" name="state_code" class="form-control" maxlength="2" value="<?= val($user['state_code']) ?>">
             </div>
             <div class="col-md-3">
-              <label class="form-label">Zip</label>
-              <input type="text" name="post_code" class="form-control" maxlength="5" pattern="[0-9]*" value="<?= val($user['post_code']) ?>">
+              <label for="post_code" class="form-label">Zip</label>
+              <input type="text" id="post_code" name="post_code" class="form-control" maxlength="5" pattern="[0-9]*" value="<?= val($user['post_code']) ?>">
             </div>
             <div class="col-12">
               <button type="submit" class="btn btn-primary">Save Info</button>
@@ -219,13 +219,13 @@ function val($value) {
         <?php /* Form 2: change username (handled by section 2) */ ?>
         <div class="col-md-6">
           <div class="card h-100">
-            <div class="card-header"><h4 class="mb-0">Change Username</h4></div>
+            <div class="card-header"><h2 class="h4 mb-0">Change Username</h2></div>
             <div class="card-body">
               <p>Current username: <strong><?= val($user['username']) ?></strong></p>
               <form method="post">
                 <input type="hidden" name="action" value="username">
-                <label class="form-label">New Username</label>
-                <input type="text" name="new_username" class="form-control mb-3" required>
+                <label for="new_username" class="form-label">New Username</label>
+                <input type="text" id="new_username" name="new_username" class="form-control mb-3" required>
                 <button type="submit" class="btn btn-primary">Change Username</button>
               </form>
             </div>
@@ -235,16 +235,16 @@ function val($value) {
         <?php /* Form 3: change password (handled by section 3). type="password" hides what is typed. */ ?>
         <div class="col-md-6">
           <div class="card h-100">
-            <div class="card-header"><h4 class="mb-0">Change Password</h4></div>
+            <div class="card-header"><h2 class="h4 mb-0">Change Password</h2></div>
             <div class="card-body">
               <form method="post">
                 <input type="hidden" name="action" value="password">
-                <label class="form-label">Current Password</label>
-                <input type="password" name="current_password" class="form-control mb-3" required>
-                <label class="form-label">New Password</label>
-                <input type="password" name="new_password" class="form-control mb-3" required>
-                <label class="form-label">Confirm New Password</label>
-                <input type="password" name="confirm_password" class="form-control mb-3" required>
+                <label for="current_password" class="form-label">Current Password</label>
+                <input type="password" id="current_password" name="current_password" class="form-control mb-3" required>
+                <label for="new_password" class="form-label">New Password</label>
+                <input type="password" id="new_password" name="new_password" class="form-control mb-3" required>
+                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" class="form-control mb-3" required>
                 <button type="submit" class="btn btn-primary">Change Password</button>
               </form>
             </div>

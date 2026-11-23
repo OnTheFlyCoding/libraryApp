@@ -53,6 +53,7 @@ function nav_link($url, $text) {
             nav_link($dir . 'index.php', 'Admin Dashboard');
             nav_link($dir . 'books.php', 'Manage Books');
             nav_link($dir . 'loans.php', 'View All Loans');
+            nav_link($dir . 'users.php', 'Manage Users');
           }
         ?>
 

@@ -20,7 +20,7 @@ $dashboards = [1 => '/admin/index.php', 2 => '/user/index.php', 3 => '/guest/ind
 $brand_url = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.php');
 ?>
 <header class="mb-5">
-  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <nav class="navbar navbar-expand-lg" style="background-color: #1681c4;">
     <div class="container-fluid">
       <a class="navbar-brand" href="<?php echo $brand_url; ?>">
         <i class="bi bi-book"></i> Brisk Books</a>
@@ -62,7 +62,7 @@ $brand_url = BASE_URL . ($dashboards[$_SESSION['user_role'] ?? 0] ?? '/index.php
             echo '<li class="nav-item"><a class="nav-link" href="' . BASE_URL . '/user/books.php">View Available Books</a></li>';
           } ?>
         </ul>
-        <button class="btn btn-outline-secondary btn-sm me-3" id="themeToggle" type="button" aria-label="Toggle dark/light mode">
+        <button class="btn btn-outline-dark btn-sm me-3" id="themeToggle" type="button" aria-label="Toggle dark/light mode">
           <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
         </button>
         <span class="navbar-text">
